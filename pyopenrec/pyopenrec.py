@@ -90,7 +90,7 @@ class User(Openrec):
     def post_capture_reaction(self, capture_id: str, reaction: str) -> dict:
         """
             reactions:
-                arara, bikkuri, gg, hatena, kami, kansya, kusa, nice, odoroki, sugo, tsuyo, umai, wakuwaku, wara, yaba
+                arara, bikkuri, gg, hatena, kakke, kami, kansya, kawaii, kusa, music, nice, odoroki, sugo, tsuyo, umai, wakuwaku, wara, yaba
         """
         url = "https://apiv5.openrec.tv/everyone/api/v5/reactions"
         param = {
