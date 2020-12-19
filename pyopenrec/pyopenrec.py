@@ -1,7 +1,6 @@
 import requests
 from .config import Config
 
-
 class Openrec(Config):
     def popular_capture(self, period="daily", page=1, is_channel_unique="false", proxy=None) -> dict:
         """
@@ -103,7 +102,7 @@ class User(Openrec):
                 headers["uuid"] = self.__uuid
                 headers["token"] = self.__token
                 headers["random"] = self.__random
-                return requests.post(url, data=param, headers=headers).json()
+                return requests.post(url, data=param, headers=headers, proxies=self.proxy).json()
 
         else:
             with requests.Session() as s:
@@ -113,7 +112,7 @@ class User(Openrec):
                 headers["token"] = r.cookies["token"]
                 headers["random"] = r.cookies["random"]
 
-                return s.post(url, data=param, headers=headers).json()
+                return s.post(url, data=param, headers=headers, proxies=self.proxy).json()
 
 
 class Movie(Openrec):
