@@ -1,6 +1,7 @@
 import requests
 from .config import Config
 
+
 class Openrec(Config):
     def popular_capture(self, period="daily", page=1, is_channel_unique="false", proxy=None) -> dict:
         """
@@ -45,7 +46,7 @@ class User(Openrec):
 
     def __init__(self, email=None, password=None, proxy=None):
         self.proxy = proxy
-        if email != None and password != None:
+        if email is not None and password is not None:
             with requests.Session() as s:
                 r = s.post("https://www.openrec.tv/api-tv/user", headers=self.HEADERS, proxies=self.proxy)
                 # login
@@ -99,10 +100,10 @@ class User(Openrec):
         }
         headers = self.HEADERS.copy()
         if self.is_login:
-                headers["uuid"] = self.__uuid
-                headers["token"] = self.__token
-                headers["random"] = self.__random
-                return requests.post(url, data=param, headers=headers, proxies=self.proxy).json()
+            headers["uuid"] = self.__uuid
+            headers["token"] = self.__token
+            headers["random"] = self.__random
+            return requests.post(url, data=param, headers=headers, proxies=self.proxy).json()
 
         else:
             with requests.Session() as s:
@@ -140,7 +141,7 @@ class Movie(Openrec):
         param = {
             "movie_id": self.movie_id,
         }
-        return requests.get(url, headers=self.HEADERS, params=param,proxies=self.proxy).json()
+        return requests.get(url, headers=self.HEADERS, params=param, proxies=self.proxy).json()
 
     def capture(self) -> dict:
         url = self.PUB_API + self.CAPTURE_PATH
