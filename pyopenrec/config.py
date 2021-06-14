@@ -11,5 +11,5 @@ class Config:
         "Accept": "application/json",
         "Accept-Encoding": "gzip, deflate, br",
         "Accept-Language": "ja,en-US;q=0.7,en;q=0.3",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0"
+        "User-Agent": "pyopenrec (https://github.com/vinyl-umbrella/pyopenrec)"
     }
