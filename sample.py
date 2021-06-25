@@ -1,10 +1,11 @@
 from pyopenrec import pyopenrec
 
 movie = pyopenrec.Movie(movie_id="1o8q43q3yzk")
+start_time="2019-01-01T00:00:00"
 last_id = -1
 
 while True:
-    comments = movie.comments(start_time="2019-10-10T10:10:10")
+    comments = movie.comments(start_time)
     for comment in comments:
         if last_id == comment["id"]:
             continue
