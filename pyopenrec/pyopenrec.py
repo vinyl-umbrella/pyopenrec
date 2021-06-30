@@ -16,11 +16,26 @@ class Openrec(Config):
             "page": page,
             "is_channel_unique": is_channel_unique,
         }
-        return requests.get(url, headers=self.HEADERS, params=param, proxies=proxy).json()
+
+        retval = 0
+        j = {}
+        try:
+            j = requests.get(url, headers=self.HEADERS, params=param, proxies=proxy).json()
+        except (requests.exceptions.ConnectionError, ValueError):
+            retval = -1
+
+        return {"status": retval, "url": url, "data": j}
 
     def get_user_info(self, user_id: str, proxy=None) -> dict:
         url = self.PUB_API + self.CHANNEL_PATH + user_id
-        return requests.get(url, headers=self.HEADERS, proxies=proxy).json()
+        retval = 0
+        j = {}
+        try:
+            j = requests.get(url, headers=self.HEADERS, proxies=proxy).json()
+        except (requests.exceptions.ConnectionError, ValueError):
+            retval = -1
+
+        return {"status": retval, "url": url, "data": j}
 
     def get_onair_movie(self, page=1, sort="live_views", onair_status=1, proxy=None) -> dict:
         """
@@ -35,10 +50,18 @@ class Openrec(Config):
         param = {
             "is_live": True,
             "onair_status": onair_status,
-            "page": 1,
+            "page": page,
             "sort": sort
         }
-        return requests.get(url, headers=self.HEADERS, params=param, proxies=proxy).json()
+
+        retval = 0
+        j = {}
+        try:
+            j = requests.get(url, headers=self.HEADERS, params=param, proxies=proxy).json()
+        except (requests.exceptions.ConnectionError, ValueError):
+            retval = -1
+
+        return {"status": retval, "url": url, "data": j}
 
 
 class User(Openrec):
@@ -85,7 +108,14 @@ class User(Openrec):
         headers["uuid"] = self.__uuid
         headers["access-token"] = self.__access_token
 
-        return requests.post(url, data=param, headers=headers, proxies=self.proxy).json()
+        retval = 0
+        j = {}
+        try:
+            j = requests.post(url, data=param, headers=headers, proxies=self.proxy).json()
+        except (requests.exceptions.ConnectionError, ValueError):
+            retval = -1
+
+        return {"status": retval, "url": url, "data": j}
 
     def post_capture_reaction(self, capture_id: str, reaction: str) -> dict:
         """
@@ -99,11 +129,19 @@ class User(Openrec):
             "reaction_id": reaction
         }
         headers = self.HEADERS.copy()
+        retval = 0
+        j = {}
+
         if self.is_login:
             headers["uuid"] = self.__uuid
             headers["token"] = self.__token
             headers["random"] = self.__random
-            return requests.post(url, data=param, headers=headers, proxies=self.proxy).json()
+            try:
+                j = requests.post(url, data=param, headers=headers, proxies=self.proxy).json()
+            except (requests.exceptions.ConnectionError, ValueError):
+                retval = -1
+
+            return {"status": retval, "url": url, "data": j}
 
         else:
             with requests.Session() as s:
@@ -113,7 +151,12 @@ class User(Openrec):
                 headers["token"] = r.cookies["token"]
                 headers["random"] = r.cookies["random"]
 
-                return s.post(url, data=param, headers=headers, proxies=self.proxy).json()
+                try:
+                    j = s.post(url, data=param, headers=headers, proxies=self.proxy).json()
+                except (requests.exceptions.ConnectionError, ValueError):
+                    retval = -1
+
+                return {"status": retval, "url": url, "data": j}
 
 
 class Movie(Openrec):
@@ -123,7 +166,14 @@ class Movie(Openrec):
 
     def info(self) -> dict:
         url = self.PUB_API + self.MOVIES_PATH + self.movie_id
-        return requests.get(url, headers=self.HEADERS, proxies=self.proxy).json()
+        retval = 0
+        j = {}
+        try:
+            j = requests.get(url, headers=self.HEADERS, proxies=self.proxy).json()
+        except (requests.exceptions.ConnectionError, ValueError):
+            retval = -1
+
+        return {"status": retval, "url": url, "data": j}
 
     def comments(self, start_time: str):
         """
@@ -134,21 +184,38 @@ class Movie(Openrec):
             "from_created_at": start_time,
             "is_including_system_message": "false"
         }
-        return requests.get(url, headers=self.HEADERS, params=param, proxies=self.proxy).json()
+        retval = 0
+        j = {}
+        try:
+            j = requests.get(url, headers=self.HEADERS, params=param, proxies=self.proxy).json()
+        except (requests.exceptions.ConnectionError, ValueError):
+            retval = -1
+
+        return {"status": retval, "url": url, "data": j}
 
     def yell(self) -> dict:
         url = self.PUB_API + self.YELLLOG_PATH
         param = {
             "movie_id": self.movie_id,
         }
-        return requests.get(url, headers=self.HEADERS, params=param, proxies=self.proxy).json()
+        try:
+            j = requests.get(url, headers=self.HEADERS, params=param, proxies=self.proxy).json()
+        except (requests.exceptions.ConnectionError, ValueError):
+            retval = -1
+
+        return {"status": retval, "url": url, "data": j}
 
     def capture(self) -> dict:
         url = self.PUB_API + self.CAPTURE_PATH
         param = {
             "movie_id": self.movie_id
         }
-        return requests.get(url, headers=self.HEADERS, params=param, proxies=self.proxy).json()
+        try:
+            j = requests.get(url, headers=self.HEADERS, params=param, proxies=self.proxy).json()
+        except (requests.exceptions.ConnectionError, ValueError):
+            retval = -1
+
+        return {"status": retval, "url": url, "data": j}
 
 
 class Capture(Openrec):
@@ -158,4 +225,11 @@ class Capture(Openrec):
 
     def info(self) -> dict:
         url = self.PUB_API + self.CAPTURE_PATH + self.capture_id
-        return requests.get(url, headers=self.HEADERS, proxies=self.proxy).json()
+        retval = 0
+        j = {}
+        try:
+            j = requests.get(url, headers=self.HEADERS, proxies=self.proxy).json()
+        except (requests.exceptions.ConnectionError, ValueError):
+            retval = -1
+
+        return {"status": retval, "url": url, "data": j}
