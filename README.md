@@ -27,6 +27,6 @@ TODO
 ```
 pip3 install -e .
 ```
-see sample programs in [dir](https://github.com/vinyl-umbrella/pyopenrec/sample)
+see sample programs in [dir](https://github.com/vinyl-umbrella/pyopenrec/tree/main/sample)
 
 [OPENREC.tv API LIST](https://futonchan-openchat.web.app/api)
