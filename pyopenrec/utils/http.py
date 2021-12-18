@@ -2,24 +2,33 @@ from ..config import HEADERS
 import requests
 
 
-def get(url: str, params=None, credentials=None) -> dict:
+def request(method: str, url: str, params=None, credentials=None) -> dict:
+    """
+    param
+    -----
+    method: str
+        HTTP method
+    url: str
+        request URL
+    params: dict
+        a
+    credentials: dict
+        uuid, access-token
+    """
     header = HEADERS
     if credentials:
-        header = {header, credentials}
+        header = {**header, **credentials}
 
-    res = requests.get(url, params=params, headers=header)
-    # print(res.url)
+    if method.upper() == "GET":
+        res = requests.get(url, params=params, headers=header)
+    elif method.upper() == "POST":
+        res = requests.post(url, data=params, headers=header)
+
     if res.status_code != 200:
-        return {"status": res.status_code}
-    return {"status": res.status_code, "data": res.json()}
+        return {"status": res.status_code, "url": res.url}
 
-
-def post(url: str, params=None, credentials=None) -> dict:
-    header = HEADERS
-    if credentials:
-        header = {header, credentials}
-
-    res = requests.post(url, params=params, headers=header)
-    if res.status_code != 200:
-        return {"status": res.status_code}
-    return {"status": res.status_code, "data": res.json()}
+    try:
+        j = res.json()
+        return {"status": res.status_code, "url": res.url, "data": j}
+    except Exception as e:
+        return {"status": -1, "message": e, "url": res.url}
