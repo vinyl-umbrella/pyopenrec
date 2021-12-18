@@ -1,8 +1,8 @@
 from .utils import http
-from .config import EXTERNAL_API, AUTHRIZED_API
+from .config import EXTERNAL_API, AUTHORIZED_API
 
 
-def get_stream_list(sort="live_views", page=1) -> dict:
+def stream_list(sort="live_views", page=1) -> dict:
     """
     Get current live stream list.
 
@@ -22,7 +22,7 @@ def get_stream_list(sort="live_views", page=1) -> dict:
     return http.request("GET", url, params)
 
 
-def get_vod_list(page=1) -> dict:
+def vod_list(page=1) -> dict:
     """
     Get popular vod list.
 
@@ -38,9 +38,9 @@ def get_vod_list(page=1) -> dict:
     return http.request("GET", url, params)
 
 
-def get_movie_list(sort="total_views", page=1) -> dict:
+def movie_list(sort="total_views", page=1) -> dict:
     """
-    Get video list.
+    Get uploaded video list.
 
     param
     ----------
@@ -58,7 +58,7 @@ def get_movie_list(sort="total_views", page=1) -> dict:
     return http.request("GET", url, params)
 
 
-def get_video_info(vid: str) -> dict:
+def video_info(vid: str) -> dict:
     """
     Get video info (title, thumbnail, date, owner, game etc.).
 
@@ -70,7 +70,7 @@ def get_video_info(vid: str) -> dict:
     return http.request("GET", url)
 
 
-def get_video_detail(vid: str, credentials):
+def video_detail(vid: str, credentials) -> dict:
     """
     Get video detail info.
     If you are using a premium account, you can get stream file url.
@@ -81,5 +81,5 @@ def get_video_detail(vid: str, credentials):
     credentials: login data
 
     """
-    url = AUTHRIZED_API + "/movies/{}/detail".format(vid)
+    url = AUTHORIZED_API + "/movies/{}/detail".format(vid)
     return http.request("GET", url, credentials=credentials)

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from .utils import http
-from .config import EXTERNAL_API, AUTHRIZED_API
+from .config import EXTERNAL_API, AUTHORIZED_API
 
 
 def get_comment(vid: str, from_created_at: str, limit=100) -> dict:
@@ -43,7 +43,7 @@ def get_recent_comment(vid: str, limit=100) -> dict:
     return http.request("GET", url, params)
 
 
-def get_vod_comment(vid: str):
+def get_vod_comment(vid: str) -> dict:
     """
     Get comments of vod
 
@@ -55,7 +55,7 @@ def get_vod_comment(vid: str):
     return http.request("GET", url)
 
 
-def post_comment(vid: str, message: str, credentials):
+def post_comment(vid: str, message: str, credentials) -> dict:
     """
     post a comment to live stream
 
@@ -65,7 +65,7 @@ def post_comment(vid: str, message: str, credentials):
     message: message which you want to post
     credentials: login data
     """
-    url = AUTHRIZED_API + "/movies/{}/chats".format(vid)
+    url = AUTHORIZED_API + "/movies/{}/chats".format(vid)
     params = {
         "message": message,
         "quality_type": 0,
@@ -77,7 +77,7 @@ def post_comment(vid: str, message: str, credentials):
     return http.request("POST", url, params, credentials)
 
 
-def post_vod_comment(vid: str, message: str, credentials):
+def post_vod_comment(vid: str, message: str, credentials) -> dict:
     """
     post a comment to vod
 
@@ -87,15 +87,15 @@ def post_vod_comment(vid: str, message: str, credentials):
     message: message which you want to post
     credentials: login data
     """
-    url = AUTHRIZED_API + "/movies/{}/comments".format(vid)
+    url = AUTHORIZED_API + "/movies/{}/comments".format(vid)
     params = {
         "message": message
     }
     return http.request("POST", url, params, credentials)
 
 
-def reply_vod_comment(vid: str, comment_id: int, message: str, credentials):
-    url = AUTHRIZED_API + "/movies/{}/comments/{}/replies".format(vid, str(comment_id))
+def reply_vod_comment(vid: str, comment_id: int, message: str, credentials) -> dict:
+    url = AUTHORIZED_API + "/movies/{}/comments/{}/replies".format(vid, str(comment_id))
     params = {
         "message": message,
         "consented_comment_terms": "true"

@@ -1,5 +1,5 @@
 EXTERNAL_API = "https://public.openrec.tv/external/api/v5"
-AUTHRIZED_API = "https://apiv5.openrec.tv/api/v5"
+AUTHORIZED_API = "https://apiv5.openrec.tv/api/v5"
 
 HEADERS = {
     "Accept": "application/json",
