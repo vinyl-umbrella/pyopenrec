@@ -1,4 +1,4 @@
-from .utils import http
+from . import http
 from .config import EXTERNAL_API, AUTHORIZED_API
 
 
