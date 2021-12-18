@@ -6,12 +6,9 @@ def request(method: str, url: str, params=None, credentials=None) -> dict:
     """
     param
     -----
-    method: str
-        HTTP method
-    url: str
-        request URL
+    method: HTTP method
+    url: request URL
     params: dict
-        a
     credentials: dict
         uuid, access-token
     """
