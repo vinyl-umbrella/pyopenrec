@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as f:
     long_desc = f.read()
 
 with open("requirements.txt", "r", encoding="utf8") as f:
-    requires = f.read()
+    requires = f.read().splitlines()
 
 setuptools.setup(
     name='pyopenrec',
@@ -16,6 +16,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(exclude=["tests"]),
     keywords=[
+        "openrec",
         "openrectv",
         "api",
     ],
@@ -23,13 +24,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License"
     ],
-    package_data={
-        "": [
-            "utils/*.py"
-            "requirements.txt",
-        ]
-    },
-    install_requires=requires.splitlines(),
+    install_requires=requires,
     url="https://github.com/vinyl-umbrella/pyopenrec",
     python_requires=">=3.6"
 )

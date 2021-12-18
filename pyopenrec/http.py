@@ -1,4 +1,4 @@
-from ..config import HEADERS
+from .config import HEADERS
 import requests
 
 
