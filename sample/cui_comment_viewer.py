@@ -12,7 +12,14 @@ def send_ping(ws):
 
 def on_m(_, message: str):
     msg = pyopenrec.chat_parser(message)
-    print(msg.type, msg.data)
+    comment_format = "{dt}  {username}({userid})  {m}"
+    if msg.type == "chat":
+        print(comment_format.format(
+            dt=msg.data["message_dt"],
+            username=msg.data["user_name"],
+            userid=msg.data["user_key"],
+            m=msg.data["message"]
+        ))
 
 
 def on_e(_, err):
