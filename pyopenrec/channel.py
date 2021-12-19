@@ -1,5 +1,5 @@
-from . import http
-from .config import EXTERNAL_API
+from .util import http
+from .util.config import EXTERNAL_API
 
 
 def channel_rank(period, date=None, page=1) -> dict:

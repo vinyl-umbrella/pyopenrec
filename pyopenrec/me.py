@@ -1,5 +1,5 @@
-from . import http
-from .config import AUTHORIZED_API
+from .util import http
+from .util.config import AUTHORIZED_API
 
 
 def me(credentials) -> dict:

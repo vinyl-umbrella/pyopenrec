@@ -1,5 +1,5 @@
-from . import http
-from .config import EXTERNAL_API, AUTHORIZED_API
+from .util import http
+from .util.config import EXTERNAL_API, AUTHORIZED_API
 
 
 def stream_list(sort="live_views", page=1) -> dict:

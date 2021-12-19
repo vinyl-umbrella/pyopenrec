@@ -1,5 +1,5 @@
-from . import http
-from .config import EXTERNAL_API
+from .util import http
+from .util.config import EXTERNAL_API
 
 
 def popular_capture(period="daily", is_channel_unique=True, page=1) -> dict:

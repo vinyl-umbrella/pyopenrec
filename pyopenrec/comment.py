@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from . import http
-from .config import EXTERNAL_API, AUTHORIZED_API
+from .util import http
+from .util.config import EXTERNAL_API, AUTHORIZED_API
 
 
 def get_comment(vid: str, from_created_at: str, limit=100) -> dict:
