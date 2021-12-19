@@ -50,6 +50,9 @@ def chat_parser(msg: str) -> ChatData:
     if index == -1:
         ret_data.type = "ping"
         ret_data.data = msg
+    elif index != 2:
+        ret_data.type = "system_msg"
+        ret_data.data = msg
     else:
         message = msg[index:].replace(
             "\\", "").replace('"{', "{").replace('}"', "}")
