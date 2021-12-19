@@ -1,5 +1,5 @@
 import requests
-from .config import HEADERS
+from .util.config import HEADERS
 
 
 def login(email=None, password=None) -> dict:

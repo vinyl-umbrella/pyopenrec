@@ -1,5 +1,5 @@
-from . import http
-from .config import EXTERNAL_API
+from .util import http
+from .util.config import EXTERNAL_API
 
 
 def playlists(user_id, type, page=1) -> dict:

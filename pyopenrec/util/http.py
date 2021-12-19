@@ -20,6 +20,8 @@ def request(method: str, url: str, params=None, credentials=None) -> dict:
         res = requests.get(url, params=params, headers=header)
     elif method.upper() == "POST":
         res = requests.post(url, data=params, headers=header)
+    elif method.upper() == "PUT":
+        res = requests.put(url, data=params, headers=header)
 
     if res.status_code != 200:
         return {"status": res.status_code, "url": res.url}
