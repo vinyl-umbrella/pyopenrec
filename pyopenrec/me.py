@@ -26,7 +26,7 @@ def timeline(type: int, credentials):
         params = {
             "limit": 40
         }
-    elif type == 1 or type == 2:
+    elif type in [1, 2]:
         url = AUTHORIZED_API + "/users/me/timelines/movies"
         params = {
             "onair_status": type,
