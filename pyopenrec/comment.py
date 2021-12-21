@@ -4,19 +4,20 @@ from .util import http
 from .util.config import EXTERNAL_API, AUTHORIZED_API
 
 
-def get_comment(vid: str, from_created_at: str, limit=100) -> dict:
+def get_comment(vid: str, from_created_at=datetime(2020, 1, 1, 0, 0, 0), limit=100) -> dict:
     """
     Get comments of live stream.
 
     param
     -----
     vid: video id
-    from_created_at: ISO8601 format datetime (e.g. 2021-12-18T17:48:33+09:00)
+    from_created_at: datetime
     limit: number of comments. max 300
     """
     url = EXTERNAL_API + "/movies/{}/chats".format(vid)
+    from_at = from_created_at.astimezone().isoformat(timespec="seconds")
     params = {
-        "from_created_at": from_created_at,
+        "from_created_at": from_at,
         "is_including_system_message": "false",
         "limit": limit
     }
@@ -95,7 +96,8 @@ def post_vod_comment(vid: str, message: str, credentials) -> dict:
 
 
 def reply_vod_comment(vid: str, comment_id: int, message: str, credentials) -> dict:
-    url = AUTHORIZED_API + "/movies/{}/comments/{}/replies".format(vid, str(comment_id))
+    url = AUTHORIZED_API + \
+        "/movies/{}/comments/{}/replies".format(vid, str(comment_id))
     params = {
         "message": message,
         "consented_comment_terms": "true"
