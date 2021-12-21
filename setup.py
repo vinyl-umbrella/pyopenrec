@@ -26,5 +26,5 @@ setuptools.setup(
     ],
     install_requires=requires,
     url="https://github.com/vinyl-umbrella/pyopenrec",
-    python_requires=">=3.6"
+    python_requires=">=3.7"
 )
