@@ -83,3 +83,31 @@ def video_detail(vid: str, credentials) -> dict:
     """
     url = AUTHORIZED_API + "/movies/{}/detail".format(vid)
     return http.request("GET", url, credentials=credentials)
+
+
+def get_stream_url(vid: str, credentials=None) -> str:
+    mdata = video_info(vid)
+    if mdata["data"]:
+        mdata = mdata["data"]
+
+        # subscription
+        if mdata["public_type"] == "member":
+            if not credentials:
+                return None
+            detail = video_detail(vid, credentials)
+            if detail["data"]:
+                return detail["data"]["data"]["items"][0]["media"]["url"]
+        # streaming
+        elif mdata["onair_status"] == 1:
+            return mdata["media"]["url_ull"]
+        # vod
+        elif mdata["onair_status"] == 2 and mdata["media"]["url_public"] is not None:
+            return mdata["media"]["url_public"].replace(
+                "public.m3u8", "playlist.m3u8")
+        # uploaded video
+        elif mdata["onair_status"] is None and mdata["movie_type"] == "2":
+            return mdata["media"]["url"]
+        else:
+            return None
+
+    return None
