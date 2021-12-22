@@ -2,6 +2,7 @@ import unittest
 
 import test_capture
 import test_channel
+import test_chat
 import test_comment
 import test_playlist
 import test_video
@@ -12,6 +13,7 @@ def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(test_capture.TestCapture))
     suite.addTest(unittest.makeSuite(test_channel.TestChannel))
+    suite.addTest(unittest.makeSuite(test_chat.TestChat))
     suite.addTest(unittest.makeSuite(test_comment.TestComment))
     suite.addTest(unittest.makeSuite(test_playlist.TestPlaylist))
     suite.addTest(unittest.makeSuite(test_video.TestVideo))
