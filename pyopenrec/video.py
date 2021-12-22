@@ -12,7 +12,7 @@ class Video:
     - Get m3u8 url. If your request is member only video, you need to login.
     """
     is_login = False
-    credentials = None
+    _credentials = None
 
     @staticmethod
     def stream_list(sort="live_views", page=1) -> dict:
@@ -90,14 +90,12 @@ class Video:
         param
         -------
         vid: video id
-        credentials: login data
-
         """
         if not self.is_login:
             raise Exception("Login Required.")
 
         url = AUTHORIZED_API + "/movies/{}/detail".format(vid)
-        return http.request("GET", url, credentials=self.credentials)
+        return http.request("GET", url, credentials=self._credentials)
 
     def timeline(self, type: int):
         """
@@ -126,7 +124,7 @@ class Video:
         else:
             return {"status": 404}
 
-        return http.request("GET", url, params, self.credentials)
+        return http.request("GET", url, params, self._credentials)
 
     def get_stream_url(self, vid: str) -> str:
         """

@@ -36,30 +36,31 @@ class Openrec(Capture, Channel, Chat, Comment, Playlist, Video, Yell):
     _credentials = {}
 
     def __init__(self, email=None, password=None, proxy=None):
-        self.session = requests.session()
-        r = self.session.post("https://www.openrec.tv/api-tv/user",
-                              headers=HEADERS)
-        if r.status_code != 200:
-            raise Exception("failed to get param")
-
-        self._credentials["uuid"] = r.cookies["uuid"]
-        self._credentials["token"] = r.cookies["token"]
-        self._credentials["random"] = r.cookies["random"]
-
-        if email is not None and password is not None:
-            param = {
-                "mail": email,
-                "password": password
-            }
-
-            r = self.session.post("https://www.openrec.tv/viewapp/v4/mobile/user/login",
-                                  data=param, headers=HEADERS, cookies=self._credentials)
+        with requests.session() as s:
+            r = s.post("https://www.openrec.tv/api-tv/user",
+                       headers=HEADERS)
             if r.status_code != 200:
-                raise Exception("failed to login")
+                raise Exception("failed to get initial param")
 
-            # self._credentials["sessid"] = r.cookies["PHPSESSID"]
-            self._credentials["access-token"] = r.cookies["access_token"]
-            self.is_login = True
+            self._credentials["uuid"] = r.cookies["uuid"]
+            self._credentials["token"] = r.cookies["token"]
+            self._credentials["random"] = r.cookies["random"]
+
+            if email is not None and password is not None:
+                param = {"mail": email, "password": password}
+                cookie = {"AWSELB": "", "AWSELBCORS": "", **self._credentials}
+
+                r = s.post("https://www.openrec.tv/viewapp/v4/mobile/user/login",
+                           data=param, headers=HEADERS, cookies=cookie)
+                if r.status_code != 200:
+                    raise Exception("failed to login")
+
+                # self._credentials["sessid"] = r.cookies["PHPSESSID"]
+                self._credentials["access-token"] = r.cookies["access_token"]
+                self._credentials["uuid"] = r.cookies["uuid"]
+                self._credentials["token"] = r.cookies["token"]
+                self._credentials["random"] = r.cookies["random"]
+                self.is_login = True
 
         self.me()
 
@@ -67,12 +68,18 @@ class Openrec(Capture, Channel, Chat, Comment, Playlist, Video, Yell):
         """
         Get login user info.
         """
-        url = AUTHORIZED_API + "/users/me"
+        if self.is_login:
+            url = AUTHORIZED_API + "/users/me"
 
-        info = http.request("GET", url, credentials=self._credentials)
-        if info["status"] != 200:
-            raise Exception(info)
+            info = http.request("GET", url, credentials=self._credentials)
+            if info["status"] != 200:
+                raise Exception(info)
 
-        # print(info)
-        self.id = info["data"]["items"]["id"]
-        self.name = info["data"]["items"]["nickname"]
+            self.id = info["data"]["data"]["items"][0]["id"]
+            self.name = info["data"]["data"]["items"][0]["nickname"]
+        else:
+            header = {**HEADERS, **self._credentials}
+            r = requests.get("https://www.openrec.tv/api-tv/user",
+                             headers=header, cookies=self._credentials)
+            j = r.json()
+            self.name = j["name"]

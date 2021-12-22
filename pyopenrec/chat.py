@@ -23,7 +23,7 @@ class Chat:
     - Parse chat data from websocket.
     """
     is_login = False
-    credentials = None
+    _credentials = None
 
     def update_name_color(self, color: str) -> dict:
         """
@@ -35,7 +35,7 @@ class Chat:
 
         url = AUTHORIZED_API + "/users/me/chat-setting"
         params = {"name_color": color}
-        return http.request("PUT", url, params, self.credentials)
+        return http.request("PUT", url, params, self._credentials)
 
     @staticmethod
     def get_ws(vid: str) -> str:

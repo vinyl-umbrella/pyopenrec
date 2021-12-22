@@ -14,7 +14,7 @@ class Comment:
     - Reply to a comment on vod.
     """
     is_login = False
-    credentials = None
+    _credentials = None
 
     @staticmethod
     def get_comment(vid: str, from_created_at=datetime(2020, 1, 1, 0, 0, 0), limit=100) -> dict:
@@ -106,7 +106,7 @@ class Comment:
         params = {
             "message": message
         }
-        return http.request("POST", url, params, self.credentials)
+        return http.request("POST", url, params, self._credentials)
 
     def reply_vod_comment(self, vid: str, comment_id: int, message: str) -> dict:
         """
@@ -121,4 +121,4 @@ class Comment:
             "message": message,
             "consented_comment_terms": "true"
         }
-        return http.request("POST", url, params, self.credentials)
+        return http.request("POST", url, params, self._credentials)
