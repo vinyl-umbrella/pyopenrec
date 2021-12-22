@@ -1,30 +1,28 @@
 # pyopenrec
+[OPENREC.tv](https://www.openrec.tv) API wrapper for Python.
 
-## install
-```
+## Installation
+```sh
 pip install git+https://github.com/vinyl-umbrella/pyopenrec
 ```
 
-## doc
-### login
-```
-TODO
-```
-### video
-```
-TODO
-```
-### comment
-```
-TODO
-```
-### chat
-```
-TODO
+## Usage
+### Basic
+```py
+from datetime import datetime
+import json
+import pyopenrec
+
+openrec = pyopenrec.Openrec()
+dt = datetime(2021, 12, 21, 0, 0, 0)
+j = openrec.get_comment("n9ze3m2w184", dt, 5)
+
+with open("sample.json", "w") as f:
+    json.dump(j, f, indent=2, ensure_ascii=False)
 ```
 
-## how to use
 <!-- python3 setup.py sdist; pip install dist/pyopenrec-0.0.1.tar.gz -->
-see sample programs in [dir](https://github.com/vinyl-umbrella/pyopenrec/tree/main/sample)
+### More
+There are more programs [here](https://github.com/vinyl-umbrella/pyopenrec/tree/main/sample)
 
 [OPENREC.tv API LIST](https://futonchan-openchat.web.app/api)
