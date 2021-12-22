@@ -11,7 +11,8 @@ class Capture:
     """
     credentials = None
 
-    def popular_capture(self, period="daily", is_channel_unique=True, page=1) -> dict:
+    @staticmethod
+    def popular_capture(period="daily", is_channel_unique=True, page=1) -> dict:
         """
         Get popular capture.
 
