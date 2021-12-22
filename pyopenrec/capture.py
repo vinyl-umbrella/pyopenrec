@@ -9,7 +9,7 @@ class Capture:
     - Get capture info. (title, parent_stream, views, creater, reactions and etc.)
     - Post capture reaction. Login Required.
     """
-    credentials = None
+    _credentials = None
 
     @staticmethod
     def popular_capture(period="daily", is_channel_unique=True, page=1) -> dict:
@@ -74,7 +74,7 @@ class Capture:
         cap_id: capture id
         reaction: "arara" | "bikkuri" | "gg" | "hatena" | "kakke" | "kami" | "kansya" | "kawaii" | "kusa" | "music" | "nice" | "odoroki" | "sugo" | "tsuyo" | "umai" | "wakuwaku" | "wara" | "yaba"
         """
-        if self.credentials is None:
+        if self._credentials is None:
             raise Exception("Login Required.")
 
         url = "https://apiv5.openrec.tv/everyone/api/v5/reactions"
@@ -83,4 +83,4 @@ class Capture:
             "target_type": "capture",
             "reaction_id": reaction
         }
-        return http.request("POST", url, params, self.credentials)
+        return http.request("POST", url, params, self._credentials)
