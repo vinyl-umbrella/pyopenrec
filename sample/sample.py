@@ -2,13 +2,13 @@ import json
 import pyopenrec
 
 
-# # login
-credentials = pyopenrec.login(email="YOUR_EMAIL", password="YOUR_PASSWORD")
-# print(credentials["data"])
+# login with email
+# user = pyopenrec.Openrec(email="YOUR_EMAIL", password="YOUR_PASSWORD")
+# j = user.timeline(2)
 
-# me
-# j = pyopenrec.me(credentials['data'])
-j = pyopenrec.timeline(2, credentials['data'])
+# without login
+user = pyopenrec.Openrec()
+j = user.post_capture_reaction("l9nk1xwegd1", "kawaii")
 
 with open("test.json", "w") as f:
     json.dump(j, f, indent=2, ensure_ascii=False)
