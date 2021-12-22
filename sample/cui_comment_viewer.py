@@ -1,4 +1,4 @@
-import pyopenrec
+from pyopenrec.chat import Chat
 import threading
 import time
 import websocket
@@ -11,7 +11,7 @@ def send_ping(ws):
 
 
 def on_m(_, message: str):
-    msg = pyopenrec.chat_parser(message)
+    msg = Chat.chat_parser(message)
     comment_format = "{dt}  {username}({userid})  {m}"
     if msg.type == "chat":
         print(comment_format.format(
@@ -35,7 +35,7 @@ def on_o(_):
 
 
 if __name__ == "__main__":
-    uri = pyopenrec.get_ws("n9ze3m2w184")
+    uri = Chat.get_ws("n9ze3m2w184")
     websocket.enableTrace(False)
     ws = websocket.WebSocketApp(uri,
                                 on_open=on_o,
