@@ -24,10 +24,10 @@ def request(method: str, url: str, params=None, credentials=None) -> dict:
         res = requests.put(url, data=params, headers=header)
 
     if res.status_code != 200:
-        return {"status": res.status_code, "url": res.url}
+        raise Exception("Failed to {}, {}".format(method, url))
 
     try:
         j = res.json()
         return {"status": res.status_code, "url": res.url, "data": j}
     except Exception as e:
-        return {"status": -1, "message": e, "url": res.url}
+        raise e
