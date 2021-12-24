@@ -40,7 +40,7 @@ class Openrec(Capture, Channel, Chat, Comment, Playlist, Video, Yell):
             r = s.post("https://www.openrec.tv/api-tv/user",
                        headers=HEADERS)
             if r.status_code != 200:
-                raise Exception("failed to get initial param")
+                raise Exception("Failed to get initial param.", r.text)
 
             self._credentials["uuid"] = r.cookies["uuid"]
             self._credentials["token"] = r.cookies["token"]
@@ -53,7 +53,7 @@ class Openrec(Capture, Channel, Chat, Comment, Playlist, Video, Yell):
                 r = s.post("https://www.openrec.tv/viewapp/v4/mobile/user/login",
                            data=param, headers=HEADERS, cookies=cookie)
                 if r.status_code != 200:
-                    raise Exception("failed to login")
+                    raise Exception("Failed to login.", r.text)
 
                 # self._credentials["sessid"] = r.cookies["PHPSESSID"]
                 self._credentials["access-token"] = r.cookies["access_token"]
