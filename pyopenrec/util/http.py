@@ -24,7 +24,7 @@ def request(method: str, url: str, params=None, credentials=None) -> dict:
         res = requests.put(url, data=params, headers=header)
 
     if res.status_code != 200:
-        raise Exception("Failed to {}, {}".format(method, url))
+        raise Exception("Failed to {}, {}\n\t{}".format(method, url, res.text))
 
     try:
         j = res.json()
