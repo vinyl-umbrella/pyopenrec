@@ -4,10 +4,13 @@ from pyopenrec.video import Video
 
 
 class TestChat(unittest.TestCase):
+    c = Chat()
+    v = Video()
+
     def test_get_comment(self):
-        v = Video.stream_list()
+        v = self.v.stream_list()
         vid = v["data"][0]["id"]
-        ws = Chat.get_ws(vid)
+        ws = self.c.get_ws(vid)
         self.assertTrue((ws.startswith("wss://")))
 
 
