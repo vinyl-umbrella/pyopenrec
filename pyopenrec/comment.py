@@ -142,3 +142,17 @@ class Comment:
             "consented_comment_terms": "true"
         }
         return http.request("POST", url, params, self._credentials, proxy=self._proxy)
+
+    def post_vote(self, vid: str, vote_id: str, index):
+        """
+        post vote
+
+        param
+        -----
+        vid: video id
+        vote_id: vote id. Get from websocket
+        index: your choise
+        """
+        url = "https://apiv5.openrec.tv/everyone/api/v5/movies/{}/polls/{}/votes".format(vid, vote_id)
+        params = {"vote_index": index}
+        return http.request("POST", url, params, self._credentials, proxy=self._proxy)
