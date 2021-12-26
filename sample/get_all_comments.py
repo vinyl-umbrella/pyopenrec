@@ -6,9 +6,10 @@ import time
 last_id = 0
 dt = datetime(2021, 12, 22, 15, 0, 0)
 vid = input("input video id: ")
+c = Comment()
 
 while True:
-    comments = Comment.get_comment(vid, dt, 5)
+    comments = c.get_comment(vid, dt, 100)
     # if got all comments, exit
     if comments["data"][-1]["id"] == last_id:
         break
