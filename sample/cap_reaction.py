@@ -3,7 +3,7 @@ import pyopenrec
 
 cap_id = input("input capture id: ")
 
-for _ in 10:
+for _ in range(3):
     # make no login user
     user = pyopenrec.Openrec()
     # post reaction

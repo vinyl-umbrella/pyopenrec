@@ -3,7 +3,7 @@ import pyopenrec
 
 vid = input("input stream id: ")
 
-for _ in 10:
+for _ in range(3):
     # make no login user
     user = pyopenrec.Openrec()
     # post template message
