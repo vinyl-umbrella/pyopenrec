@@ -13,9 +13,9 @@ class Video:
     """
     is_login = False
     _credentials = None
+    _proxy = {}
 
-    @staticmethod
-    def stream_list(sort="live_views", page=1) -> dict:
+    def stream_list(self, sort="live_views", page=1) -> dict:
         """
         Get current live stream list.
 
@@ -32,10 +32,9 @@ class Video:
             "sort": sort,
             "is_live": "true"
         }
-        return http.request("GET", url, params)
+        return http.request("GET", url, params, proxy=self._proxy)
 
-    @staticmethod
-    def vod_list(page=1) -> dict:
+    def vod_list(self, page=1) -> dict:
         """
         Get popular vod list.
 
@@ -48,10 +47,9 @@ class Video:
             "page": page,
             "popular_type": "archive"
         }
-        return http.request("GET", url, params)
+        return http.request("GET", url, params, proxy=self._proxy)
 
-    @staticmethod
-    def movie_list(sort="total_views", page=1) -> dict:
+    def movie_list(self, sort="total_views", page=1) -> dict:
         """
         Get uploaded video list.
 
@@ -68,10 +66,9 @@ class Video:
             "is_upload": "true",
             "is_live": "false"
         }
-        return http.request("GET", url, params)
+        return http.request("GET", url, params, proxy=self._proxy)
 
-    @staticmethod
-    def video_info(vid: str) -> dict:
+    def video_info(self, vid: str) -> dict:
         """
         Get video info. (title, thumbnail, date, owner, game etc.)
 
@@ -80,7 +77,7 @@ class Video:
         vid: video id
         """
         url = EXTERNAL_API + "/movies/" + vid
-        return http.request("GET", url)
+        return http.request("GET", url, proxy=self._proxy)
 
     def video_detail(self, vid: str) -> dict:
         """
@@ -95,7 +92,7 @@ class Video:
             raise Exception("Login Required.")
 
         url = AUTHORIZED_API + "/movies/{}/detail".format(vid)
-        return http.request("GET", url, credentials=self._credentials)
+        return http.request("GET", url, credentials=self._credentials, proxy=self._proxy)
 
     def timeline(self, type: int):
         """
@@ -124,7 +121,7 @@ class Video:
         else:
             return {"status": 404}
 
-        return http.request("GET", url, params, self._credentials)
+        return http.request("GET", url, params, self._credentials, proxy=self._proxy)
 
     def get_stream_url(self, vid: str) -> str:
         """

@@ -7,9 +7,9 @@ class Playlist:
     - Get list of playlists for a specific user.
     - Get playlist contents, capture or video.
     """
+    _proxy = {}
 
-    @staticmethod
-    def playlists(user_id, type, page=1) -> dict:
+    def playlists(self, user_id, type, page=1) -> dict:
         """
         Get list of playlists for a specific user.
 
@@ -24,10 +24,9 @@ class Playlist:
             "playlist_type": type,
             "page": page
         }
-        return http.request("GET", url, params)
+        return http.request("GET", url, params, proxy=self._proxy)
 
-    @staticmethod
-    def playlist_contents(playlist_id: str) -> dict:
+    def playlist_contents(self, playlist_id: str) -> dict:
         """
         Get playlist contents, capture or video.
 
@@ -36,4 +35,4 @@ class Playlist:
         playlist_id: playlist id
         """
         url = EXTERNAL_API + "/playlists/{}".format(playlist_id)
-        return http.request("GET", url)
+        return http.request("GET", url, proxy=self._proxy)

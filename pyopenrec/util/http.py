@@ -2,7 +2,7 @@ from .config import HEADERS
 import requests
 
 
-def request(method: str, url: str, params=None, credentials=None) -> dict:
+def request(method: str, url: str, params=None, credentials=None, proxy=None) -> dict:
     """
     param
     -----
@@ -11,17 +11,19 @@ def request(method: str, url: str, params=None, credentials=None) -> dict:
     params: dict
     credentials: dict
         uuid, access-token
+    proxy: dict
+        http, https
     """
     header = HEADERS
     if credentials:
         header = {**header, **credentials}
 
     if method.upper() == "GET":
-        res = requests.get(url, params=params, headers=header)
+        res = requests.get(url, params=params, headers=header, proxies=proxy)
     elif method.upper() == "POST":
-        res = requests.post(url, data=params, headers=header)
+        res = requests.post(url, data=params, headers=header, proxies=proxy)
     elif method.upper() == "PUT":
-        res = requests.put(url, data=params, headers=header)
+        res = requests.put(url, data=params, headers=header, proxies=proxy)
 
     if res.status_code != 200:
         raise Exception("Failed to {}, {}\n\t{}".format(method, url, res.text))

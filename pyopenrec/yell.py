@@ -8,8 +8,9 @@ class Yell:
     - Get yell list in the order of points in a specific user.
     - Get yell list in time order.
     """
-    @staticmethod
-    def yell_rank_in_video(vid: str, page=1):
+    _proxy = {}
+
+    def yell_rank_in_video(self, vid: str, page=1):
         """
         Get yell list in the order of points in a specific video.
 
@@ -23,10 +24,9 @@ class Yell:
             "movie_id": vid,
             "page": page
         }
-        return http.request("GET", url, params)
+        return http.request("GET", url, params, proxy=self._proxy)
 
-    @staticmethod
-    def yell_rank_in_user(user_id: str, month=None, page=1):
+    def yell_rank_in_user(self, user_id: str, month=None, page=1):
         """
         Get yell list in the order of points in a specific user.
 
@@ -42,10 +42,9 @@ class Yell:
             "month": str(month),
             "page": page
         }
-        return http.request("GET", url, params)
+        return http.request("GET", url, params, proxy=self._proxy)
 
-    @staticmethod
-    def yell_history(vid, page=1):
+    def yell_history(self, vid, page=1):
         """
         Get yell list in time order.
 
@@ -59,4 +58,4 @@ class Yell:
             "movie_id": vid,
             "page": page
         }
-        return http.request("GET", url, params)
+        return http.request("GET", url, params, proxy=self._proxy)

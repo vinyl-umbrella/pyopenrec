@@ -35,7 +35,7 @@ class Chat:
 
         url = AUTHORIZED_API + "/users/me/chat-setting"
         params = {"name_color": color}
-        return http.request("PUT", url, params, self._credentials)
+        return http.request("PUT", url, params, self._credentials, proxy=self._proxy)
 
     @staticmethod
     def get_ws(vid: str) -> str:
@@ -46,7 +46,8 @@ class Chat:
         -----
         vid: video id
         """
-        data = Video.video_info(vid)
+        v = Video()
+        data = v.video_info(vid)
         mid = data["data"]["movie_id"]
         now = int(time.time())
         ws = "wss://chat.openrec.tv/socket.io/?movieId={}&connectAt={}&isExcludeLiveViewers=false&EIO=3&transport=websocket".format(
