@@ -10,9 +10,9 @@ class Capture:
     - Post capture reaction. Login Required.
     """
     _credentials = None
+    _proxy = {}
 
-    @staticmethod
-    def popular_capture(period="daily", is_channel_unique=True, page=1) -> dict:
+    def popular_capture(self, period="daily", is_channel_unique=True, page=1) -> dict:
         """
         Get popular capture.
 
@@ -28,10 +28,9 @@ class Capture:
             "is_channel_unique": is_channel_unique,
             "page": page
         }
-        return http.request("GET", url, params)
+        return http.request("GET", url, params, proxy=self._proxy)
 
-    @staticmethod
-    def capture_list(channel=None, vid=None, sort="views", sort_direction="DESC", page=1) -> dict:
+    def capture_list(self, channel=None, vid=None, sort="views", sort_direction="DESC", page=1) -> dict:
         """
         Get capture list.
 
@@ -51,10 +50,9 @@ class Capture:
             "sort_direction": sort_direction,
             "page": page
         }
-        return http.request("GET", url, params)
+        return http.request("GET", url, params, proxy=self._proxy)
 
-    @staticmethod
-    def capture_info(cap_id: str) -> dict:
+    def capture_info(self, cap_id: str) -> dict:
         """
         Get capture info. (title, parent_stream, views, creater, reactions and etc.)
 
@@ -63,7 +61,7 @@ class Capture:
         cap_id: capture id
         """
         url = EXTERNAL_API + "/captures/{}".format(cap_id)
-        return http.request("GET", url)
+        return http.request("GET", url, proxy=self._proxy)
 
     def post_capture_reaction(self, cap_id, reaction) -> dict:
         """
@@ -83,4 +81,4 @@ class Capture:
             "target_type": "capture",
             "reaction_id": reaction
         }
-        return http.request("POST", url, params, self._credentials)
+        return http.request("POST", url, params, self._credentials, self._proxy)

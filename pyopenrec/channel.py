@@ -9,9 +9,9 @@ class Channel:
     - Get subscription info.
     - Get whether the user is moving or not.
     """
+    _proxy = {}
 
-    @staticmethod
-    def channel_rank(period, date=None, page=1) -> dict:
+    def channel_rank(self, period, date=None, page=1) -> dict:
         """
         Get current channel ranking.
 
@@ -27,10 +27,9 @@ class Channel:
             "date": date,
             "page": page
         }
-        return http.request("GET", url, params)
+        return http.request("GET", url, params, proxy=self._proxy)
 
-    @staticmethod
-    def channel_info(user_id: str) -> dict:
+    def channel_info(self, user_id: str) -> dict:
         """
         Get user info. (nickname, introduction, register date, and etc.)
 
@@ -39,10 +38,9 @@ class Channel:
         user_id: user id
         """
         url = EXTERNAL_API + "/channels/{}".format(user_id)
-        return http.request("GET", url)
+        return http.request("GET", url, proxy=self._proxy)
 
-    @staticmethod
-    def subscription_info(user_id: str) -> dict:
+    def subscription_info(self, user_id: str) -> dict:
         """
         Get subscription info.
 
@@ -51,10 +49,9 @@ class Channel:
         user_id: user id
         """
         url = EXTERNAL_API + "/subs-channels/{}".format(user_id)
-        return http.request("GET", url)
+        return http.request("GET", url, proxy=self._proxy)
 
-    @classmethod
-    def is_streaming(cls, user_id: str) -> bool:
+    def is_streaming(self, user_id: str) -> bool:
         """
         Get whether the user is moving or not.
 
@@ -62,7 +59,7 @@ class Channel:
         -----
         user_id: user id
         """
-        j = cls.channel_info(user_id)
+        j = self.channel_info(user_id)
         if j["status"] == 200 and j["data"]:
             if j["data"]["is_live"]:
                 return True
