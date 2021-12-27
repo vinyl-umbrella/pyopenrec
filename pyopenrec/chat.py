@@ -7,10 +7,8 @@ from .util import http
 
 class ChatData():
     """
-    type: or
-    data: {
-
-    }
+    type: "chat" || "live_viewers" || "stream_end" || "stream_start" || "ban" || "unban" || "add_staff" || "remove_staff" || "need_refresh" || "info" || "telop" || "subscription" || "vote_start" || "vote_progress" || "vote_end" || "unknown"
+    data: {}
     """
     type = ""
     data = {}
@@ -116,6 +114,6 @@ class Chat:
                     ret_data.type = "vote_end"
 
                 else:
-                    print(j[1])
+                    ret_data.type = "unknown"
 
         return ret_data
