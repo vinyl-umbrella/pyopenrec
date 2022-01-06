@@ -70,16 +70,16 @@ class Chat:
             ret_data.type = "system_msg"
             ret_data.data = msg
         else:
-            message = msg[index:].replace(
-                "\\\"", "\"").replace("\\\\", "\\").replace('"{', "{").replace('}"', "}")
+            message = msg[index:].strip('"\n ')
             j = json.loads(message)
             if j[0] != "message":
                 ret_data.type = "unknown"
                 ret_data.data = message
 
             else:
-                t = j[1]["type"]
-                ret_data.data = j[1]["data"]
+                ws_data = json.loads(j[1])
+                t = ws_data["type"]
+                ret_data.data = ws_data["data"]
 
                 if t == 0:
                     ret_data.type = "chat"
