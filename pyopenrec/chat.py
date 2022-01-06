@@ -22,6 +22,7 @@ class Chat:
     """
     is_login = False
     _credentials = None
+    _proxy = {}
 
     def update_name_color(self, color: str) -> dict:
         """

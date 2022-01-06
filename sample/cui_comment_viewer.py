@@ -20,14 +20,18 @@ def on_m(_, message: str):
             userid=msg.data["user_key"],
             m=msg.data["message"]
         ))
+    elif msg.type in ["live_viewers", "need_refresh", "ping"]:
+        pass
+    else:
+        print(msg.type, msg.data)
 
 
 def on_e(_, err):
     print("[err]", err)
 
 
-def on_c(_):
-    print("[close]")
+def on_c(_, status, msg):
+    print("[close]", status, msg)
 
 
 def on_o(_):
