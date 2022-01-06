@@ -154,6 +154,6 @@ class Video:
             elif mdata["onair_status"] is None and mdata["movie_type"] == "2":
                 return mdata["media"]["url"]
             else:
-                return None
+                return ""
 
-        return None
+        return ""

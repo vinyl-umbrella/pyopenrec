@@ -80,7 +80,7 @@ class Openrec(Capture, Channel, Chat, Comment, Playlist, Video, Yell):
 
         self.me()
 
-    def me(self) -> dict:
+    def me(self):
         """
         Get login user info.
         """

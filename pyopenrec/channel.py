@@ -9,7 +9,7 @@ class Channel:
     - Get subscription info.
     - Get whether the user is moving or not.
     """
-    _credentials = {}
+    _credentials = None
     _proxy = {}
 
     def channel_rank(self, period, date=None, page=1) -> dict:

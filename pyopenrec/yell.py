@@ -19,7 +19,7 @@ class Yell:
         vid: video id
         page: page number
         """
-        url = EXTERNAL_API + "/yell-ranks"
+        url = f"{EXTERNAL_API}/yell-ranks"
         params = {
             "movie_id": vid,
             "page": page
@@ -36,7 +36,7 @@ class Yell:
         month: \\d{6}
         page: page number
         """
-        url = EXTERNAL_API + "/yell-ranks"
+        url = f"{EXTERNAL_API}/yell-ranks"
         params = {
             "user_id": user_id,
             "month": str(month),
@@ -53,7 +53,7 @@ class Yell:
         vid: video id
         page: page number
         """
-        url = EXTERNAL_API + "/yell-logs"
+        url = f"{EXTERNAL_API}/yell-logs"
         params = {
             "movie_id": vid,
             "page": page
