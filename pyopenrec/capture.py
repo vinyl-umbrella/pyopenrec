@@ -22,7 +22,7 @@ class Capture:
         is_channel_unique: Allow duplicate channels or not
         page: page number
         """
-        url = EXTERNAL_API + "/capture-ranks"
+        url = f"{EXTERNAL_API}/capture-ranks"
         params = {
             "period": period,
             "is_channel_unique": is_channel_unique,
@@ -42,7 +42,7 @@ class Capture:
         sort_direction: "ASC" | "DESC"
         page: page number
         """
-        url = EXTERNAL_API + "/captures"
+        url = f"{EXTERNAL_API}/captures"
         params = {
             "channel_id": channel,
             "movie_id": vid,
@@ -60,7 +60,7 @@ class Capture:
         -----
         cap_id: capture id
         """
-        url = EXTERNAL_API + "/captures/{}".format(cap_id)
+        url = f"{EXTERNAL_API}/captures/{cap_id}"
         return http.request("GET", url, proxy=self._proxy)
 
     def post_capture_reaction(self, cap_id, reaction) -> dict:

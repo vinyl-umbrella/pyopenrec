@@ -25,7 +25,7 @@ class Video:
         sort:
             "total_views" | "created_at" | "-created_at" | "schedule_at" | "onair_status" | "live_views" | "total_yells" | "-total_yells" | "popularity" | "published_at" | "-published_at"
         """
-        url = EXTERNAL_API + "/movies"
+        url = f"{EXTERNAL_API}/movies"
         params = {
             "page": page,
             "onair_status": 1,
@@ -42,7 +42,7 @@ class Video:
         -----
         page: page number
         """
-        url = EXTERNAL_API + "/popular-movies"
+        url = f"{EXTERNAL_API}/popular-movies"
         params = {
             "page": page,
             "popular_type": "archive"
@@ -59,7 +59,7 @@ class Video:
         sort:
             "total_views" | "created_at" | "-created_at" | "schedule_at" | "total_yells" | "-total_yells" | "popularity" | "published_at" | "-published_at"
         """
-        url = EXTERNAL_API + "/movies"
+        url = f"{EXTERNAL_API}/movies"
         params = {
             "page": page,
             "sort": sort,
@@ -76,7 +76,7 @@ class Video:
         -----
         vid: video id
         """
-        url = EXTERNAL_API + "/movies/" + vid
+        url = f"{EXTERNAL_API}/movies/{vid}"
         return http.request("GET", url, proxy=self._proxy)
 
     def video_detail(self, vid: str) -> dict:
@@ -91,7 +91,7 @@ class Video:
         if not self.is_login:
             raise Exception("Login Required.")
 
-        url = AUTHORIZED_API + "/movies/{}/detail".format(vid)
+        url = f"{AUTHORIZED_API}/movies/{vid}/detail"
         return http.request("GET", url, credentials=self._credentials, proxy=self._proxy)
 
     def timeline(self, type: int):
@@ -108,12 +108,12 @@ class Video:
         if not self.is_login:
             raise Exception("Login Required.")
         if type == 0:
-            url = AUTHORIZED_API + "/users/me/timeline-movies/comingups"
+            url = f"{AUTHORIZED_API}/users/me/timeline-movies/comingups"
             params = {
                 "limit": 40
             }
         elif type in [1, 2]:
-            url = AUTHORIZED_API + "/users/me/timelines/movies"
+            url = f"{AUTHORIZED_API}/users/me/timelines/movies"
             params = {
                 "onair_status": type,
                 "limit": 40

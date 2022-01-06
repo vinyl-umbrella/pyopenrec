@@ -26,7 +26,7 @@ def request(method: str, url: str, params=None, credentials=None, proxy=None) ->
         res = requests.put(url, data=params, headers=header, proxies=proxy)
 
     if res.status_code != 200:
-        raise Exception("Failed to {}, {}\n\t{}".format(method, url, res.text))
+        raise Exception(f"Failed to {method}, {url}\n\t{res.text}")
 
     try:
         j = res.json()
