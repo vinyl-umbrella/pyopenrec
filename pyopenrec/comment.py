@@ -27,7 +27,7 @@ class Comment:
         from_created_at: datetime
         limit: number of comments. max 300
         """
-        url = EXTERNAL_API + "/movies/{}/chats".format(vid)
+        url = f"{EXTERNAL_API}/movies/{vid}/chats"
         from_at = from_created_at.astimezone().isoformat(timespec="seconds")
         params = {
             "from_created_at": from_at,
@@ -46,7 +46,7 @@ class Comment:
         limit: number of comments. max 300
         """
         now = datetime.now().astimezone().isoformat(timespec="seconds")
-        url = EXTERNAL_API + "/movies/{}/chats".format(vid)
+        url = f"{EXTERNAL_API}/movies/{vid}/chats"
 
         params = {
             "to_created_at": now,
@@ -63,7 +63,7 @@ class Comment:
         -----
         vid: video id
         """
-        url = EXTERNAL_API + "/movies/{}/comments".format(vid)
+        url = f"{EXTERNAL_API}/movies/{vid}/comments"
         return http.request("GET", url, proxy=self._proxy)
 
     def post_comment(self, vid: str, message: str) -> dict:
@@ -77,7 +77,7 @@ class Comment:
         """
         if not self.is_login:
             raise Exception("Login Required.")
-        url = AUTHORIZED_API + "/movies/{}/chats".format(vid)
+        url = f"{AUTHORIZED_API}/movies/{vid}/chats"
         params = {
             "message": message,
             "quality_type": 0,
@@ -98,8 +98,7 @@ class Comment:
         comment_num:
         0: こんにちは！, 1: こんばんは！, 2: わこつ, 3: 神, 4: ナイス, 5: お疲れ様です！, 6: うまい, 7: おはようございます, 8: 初見です, 9: きたよ, 10: gg, 11: ドンマイ, 12: いいね, 13: おめでとう！, 14: おやすみ
         """
-        url = "https://apiv5.openrec.tv/everyone/api/v5/movies/{}/chats".format(
-            vid)
+        url = f"https://apiv5.openrec.tv/everyone/api/v5/movies/{vid}/chats"
         comments = [
             "19jlkj1knm7", "lj0gzn767dm", "gje0zy1z7w2", "5n39zmgz41g", "qryvzroz057", "8jw9z3mkrd1", "x9rozpqkm3q", "j9pmkq1zw27", "glew6d8zdmn", "enq56l1zpl4", "o04vz0w6d1m", "1yw4k90knqx", "g9evzxykxd4", "48w2zenzdvj", "q0jl6oekm97"
         ]
@@ -122,7 +121,7 @@ class Comment:
         if not self.is_login:
             raise Exception("Login Required.")
 
-        url = AUTHORIZED_API + "/movies/{}/comments".format(vid)
+        url = f"{AUTHORIZED_API}/movies/{vid}/comments"
         params = {
             "message": message
         }
@@ -135,8 +134,7 @@ class Comment:
         if not self.is_login:
             raise Exception("Login Required.")
 
-        url = AUTHORIZED_API + \
-            "/movies/{}/comments/{}/replies".format(vid, str(comment_id))
+        url = f"{AUTHORIZED_API}/movies/{vid}/comments/{str(comment_id)}/replies"
         params = {
             "message": message,
             "consented_comment_terms": "true"
@@ -153,6 +151,6 @@ class Comment:
         vote_id: vote id. Get from websocket
         index: your choise
         """
-        url = "https://apiv5.openrec.tv/everyone/api/v5/movies/{}/polls/{}/votes".format(vid, vote_id)
+        url = f"https://apiv5.openrec.tv/everyone/api/v5/movies/{vid}/polls/{vote_id}/votes"
         params = {"vote_index": index}
         return http.request("POST", url, params, self._credentials, proxy=self._proxy)

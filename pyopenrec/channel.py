@@ -22,7 +22,7 @@ class Channel:
         date: YYYYMM (e.g. 201912)
         page: page number
         """
-        url = EXTERNAL_API + "/channel-ranks"
+        url = f"{EXTERNAL_API}/channel-ranks"
         params = {
             "period": period,
             "date": date,
@@ -38,7 +38,7 @@ class Channel:
         -----
         user_id: user id
         """
-        url = EXTERNAL_API + "/channels/{}".format(user_id)
+        url = f"{EXTERNAL_API}/channels/{user_id}"
         return http.request("GET", url, proxy=self._proxy)
 
     def subscription_info(self, user_id: str) -> dict:
@@ -49,7 +49,7 @@ class Channel:
         -----
         user_id: user id
         """
-        url = EXTERNAL_API + "/subs-channels/{}".format(user_id)
+        url = f"{EXTERNAL_API}/subs-channels/{user_id}"
         return http.request("GET", url, proxy=self._proxy)
 
     def _get_follow(self, user_id: str, is_follow: int, page: int):

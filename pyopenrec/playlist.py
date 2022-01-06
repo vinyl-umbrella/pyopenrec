@@ -18,7 +18,7 @@ class Playlist:
         user_id: user id
         type: "movie" | "capture"
         """
-        url = EXTERNAL_API + "/playlists"
+        url = f"{EXTERNAL_API}/playlists"
         params = {
             "create_user_id": user_id,
             "playlist_type": type,
@@ -34,5 +34,5 @@ class Playlist:
         -----
         playlist_id: playlist id
         """
-        url = EXTERNAL_API + "/playlists/{}".format(playlist_id)
+        url = f"{EXTERNAL_API}/playlists/{playlist_id}"
         return http.request("GET", url, proxy=self._proxy)

@@ -31,7 +31,7 @@ class Chat:
         if not self.is_login:
             raise Exception("Login Required.")
 
-        url = AUTHORIZED_API + "/users/me/chat-setting"
+        url = f"{AUTHORIZED_API}/users/me/chat-setting"
         params = {"name_color": color}
         return http.request("PUT", url, params, self._credentials, proxy=self._proxy)
 
@@ -48,8 +48,7 @@ class Chat:
         data = v.video_info(vid)
         mid = data["data"]["movie_id"]
         now = int(time.time())
-        ws = "wss://chat.openrec.tv/socket.io/?movieId={}&connectAt={}&isExcludeLiveViewers=false&EIO=3&transport=websocket".format(
-            mid, now)
+        ws = f"wss://chat.openrec.tv/socket.io/?movieId={mid}&connectAt={now}&isExcludeLiveViewers=false&EIO=3&transport=websocket"
         return ws
 
     @staticmethod
