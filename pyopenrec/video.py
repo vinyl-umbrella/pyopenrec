@@ -119,7 +119,7 @@ class Video:
                 "limit": 40
             }
         else:
-            return {"status": 404}
+            raise Exception("Invalid type.")
 
         return http.request("GET", url, params, self._credentials, proxy=self._proxy)
 
@@ -142,7 +142,7 @@ class Video:
 
                 detail = self.video_detail(vid)
                 if detail["data"]:
-                    return detail["data"]["data"]["items"][0]["media"]["url"]
+                    return detail["data"][0]["media"]["url"]
             # streaming
             elif mdata["onair_status"] == 1:
                 return mdata["media"]["url_ull"]
