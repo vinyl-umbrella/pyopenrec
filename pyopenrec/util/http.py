@@ -28,8 +28,28 @@ def request(method: str, url: str, params=None, credentials=None, proxy=None) ->
     if res.status_code != 200:
         raise Exception(f"Failed to {method}, {url}\n\t{res.text}")
 
+    retObj = {
+        "status": 0,
+        "url": res.url,
+        "data": {}
+    }
+
     try:
+        retObj["status"] = res.status_code
         j = res.json()
-        return {"status": res.status_code, "url": res.url, "data": j}
+
+        if "message" in j:
+            raise Exception(j["message"])
+
+        if "data" in j and "items" in j["data"]:
+            items = j["data"]["items"]
+            if list(j["data"].keys()) == ['type', 'items'] and isinstance(items, list):
+                retObj["data"] = items
+            else:
+                retObj["data"] = j["data"]
+        else:
+            retObj["data"] = j
+        return retObj
+
     except Exception as e:
         raise e

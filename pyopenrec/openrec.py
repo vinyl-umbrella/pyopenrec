@@ -92,8 +92,8 @@ class Openrec(Capture, Channel, Chat, Comment, Playlist, Video, Yell):
             if info["status"] != 200:
                 raise Exception(info)
 
-            self.id = info["data"]["data"]["items"][0]["id"]
-            self.name = info["data"]["data"]["items"][0]["nickname"]
+            self.id = info["data"][0]["id"]
+            self.name = info["data"][0]["nickname"]
         else:
             header = {**HEADERS, **self._credentials}
             r = requests.get("https://www.openrec.tv/api-tv/user",
