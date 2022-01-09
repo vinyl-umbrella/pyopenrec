@@ -25,6 +25,13 @@ class TestChannel(unittest.TestCase):
         self.assertIsNotNone(data["url"])
         self.assertIsNotNone(data["data"])
 
+    def test_contents(self):
+        data = self.c.contents("indegnasen", 2)
+        self.assertEqual(200, data["status"])
+        self.assertIsNotNone(data["url"])
+        self.assertIsNotNone(data["data"])
+        self.assertIsInstance(data["data"], list)
+
     def test_is_streaming(self):
         v = self.v.stream_list()
         user_id = v["data"][0]["channel"]["id"]

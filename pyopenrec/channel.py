@@ -52,6 +52,25 @@ class Channel:
         url = f"{EXTERNAL_API}/subs-channels/{user_id}"
         return http.request("GET", url, proxy=self._proxy)
 
+    def contents(self, user_id: str, type: int) -> dict:
+        """
+        Get coming ups, vods and current stream list of a specific user.
+
+        param
+        -----
+        user_id: user id
+        type:
+            0: coming up
+            1: now streaming
+            2: vod
+        """
+        url = f"{EXTERNAL_API}/movies"
+        params = {
+            "channel_ids": user_id,
+            "onair_status": type
+        }
+        return http.request("GET", url, params=params, proxy=self._proxy)
+
     def _get_follow(self, user_id: str, is_follow: int, page: int):
         """
         param
