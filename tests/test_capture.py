@@ -10,18 +10,21 @@ class TestCapture(unittest.TestCase):
         self.assertEqual(200, data["status"])
         self.assertIsNotNone(data["url"])
         self.assertIsNotNone(data["data"])
+        self.assertIsInstance(data["data"], list)
 
     def test_capture_list(self):
         data = self.c.capture_list(sort="reaction")
         self.assertEqual(200, data["status"])
         self.assertIsNotNone(data["url"])
         self.assertIsNotNone(data["data"])
+        self.assertIsInstance(data["data"], list)
 
     def test_capture_info(self):
         data = self.c.capture_info("72q3gvk0do8")
         self.assertEqual(200, data["status"])
         self.assertIsNotNone(data["url"])
         self.assertIsNotNone(data["data"])
+        self.assertIsInstance(data["data"], dict)
 
 
 if __name__ == "__main__":
