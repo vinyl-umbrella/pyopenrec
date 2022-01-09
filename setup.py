@@ -8,7 +8,7 @@ with open("requirements.txt", "r", encoding="utf8") as f:
 
 setuptools.setup(
     name='pyopenrec',
-    version='0.0.2',
+    version='0.0.3',
     license='MIT',
     author='vinyl-umbrella',
     description='API wrapper for OPENREC.tv',
