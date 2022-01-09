@@ -10,24 +10,28 @@ class TestVideo(unittest.TestCase):
         self.assertEqual(200, data["status"])
         self.assertIsNotNone(data["url"])
         self.assertIsNotNone(data["data"])
+        self.assertIsInstance(data["data"], list)
 
     def test_vod_list(self):
         data = self.v.vod_list(page=2)
         self.assertEqual(200, data["status"])
         self.assertIsNotNone(data["url"])
         self.assertIsNotNone(data["data"])
+        self.assertIsInstance(data["data"], list)
 
     def test_movie_list(self):
         data = self.v.movie_list("created_at", page=2)
         self.assertEqual(200, data["status"])
         self.assertIsNotNone(data["url"])
         self.assertIsNotNone(data["data"])
+        self.assertIsInstance(data["data"], list)
 
     def test_video_info(self):
         data = self.v.video_info("e5rkej2k1rv")
         self.assertEqual(200, data["status"])
         self.assertIsNotNone(data["url"])
         self.assertIsNotNone(data["data"])
+        self.assertIsInstance(data["data"], dict)
 
 
 if __name__ == "__main__":

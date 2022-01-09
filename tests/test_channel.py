@@ -12,18 +12,21 @@ class TestChannel(unittest.TestCase):
         self.assertEqual(200, data["status"])
         self.assertIsNotNone(data["url"])
         self.assertIsNotNone(data["data"])
+        self.assertIsInstance(data["data"], list)
 
     def test_channel_info(self):
         data = self.c.channel_info("sumomo_xqx")
         self.assertEqual(200, data["status"])
         self.assertIsNotNone(data["url"])
         self.assertIsNotNone(data["data"])
+        self.assertIsInstance(data["data"], dict)
 
     def test_subscription_info(self):
         data = self.c.subscription_info("indegnasen")
         self.assertEqual(200, data["status"])
         self.assertIsNotNone(data["url"])
         self.assertIsNotNone(data["data"])
+        self.assertIsInstance(data["data"], dict)
 
     def test_contents(self):
         data = self.c.contents("indegnasen", 2)
