@@ -7,6 +7,9 @@ class Channel:
     - Get current channel ranking.
     - Get user info. (nickname, introduction, register date, and etc.)
     - Get subscription info.
+    - Get `user_id`'s  coming ups, vods and current stream list.
+    - get `user_id`'s follow list
+    - get `user_id`'s follower list
     - Get whether the user is moving or not.
     """
     _credentials = None

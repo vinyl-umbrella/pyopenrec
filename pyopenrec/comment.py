@@ -12,6 +12,7 @@ class Comment:
     - Post a comment to live stream.
     - Post a comment to vod.
     - Reply to a comment on vod.
+    - Post vote
     """
     is_login = False
     _credentials = None
@@ -143,7 +144,7 @@ class Comment:
 
     def post_vote(self, vid: str, vote_id: str, index):
         """
-        post vote
+        Post vote
 
         param
         -----
