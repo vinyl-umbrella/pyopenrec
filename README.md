@@ -21,8 +21,8 @@ with open("sample.json", "w") as f:
     json.dump(j, f, indent=2, ensure_ascii=False)
 ```
 
-<!-- python3 setup.py sdist; pip install dist/pyopenrec-0.0.1.tar.gz -->
-### More
+<!-- python3 setup.py sdist; pip install dist/pyopenrec-0.0.3.tar.gz -->
+### More Samples
 There are more programs [here](https://github.com/vinyl-umbrella/pyopenrec/tree/main/sample)
 
 [OPENREC.tv API LIST](https://futonchan-openchat.web.app/api)
