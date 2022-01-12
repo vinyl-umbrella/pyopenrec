@@ -27,12 +27,17 @@ There are more programs [here](https://github.com/vinyl-umbrella/pyopenrec/tree/
 
 [OPENREC.tv API LIST](https://futonchan-openchat.web.app/api)
 
-## dev
+## Dev
 ```sh
-pipenv install
+# install dev dependencies
+pipenv install --dev
+# Spawns a shell within the virtualenv
 pipenv shell
+# If you add some packages, add it to the requirements.txt
 pipenv lock -r > requirements.txt
+# install pyopenrec to virtual environment
 pipenv install -e .
-# test
+# lint & test
+pipenv run lint
 pipenv run test
 ```
