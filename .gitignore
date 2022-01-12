@@ -3,4 +3,5 @@
 /.vscode
 /env
 /dist
+/build
 sample/*.json

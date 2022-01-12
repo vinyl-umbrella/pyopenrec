@@ -26,3 +26,13 @@ with open("sample.json", "w") as f:
 There are more programs [here](https://github.com/vinyl-umbrella/pyopenrec/tree/main/sample)
 
 [OPENREC.tv API LIST](https://futonchan-openchat.web.app/api)
+
+## dev
+```sh
+pipenv install
+pipenv shell
+pipenv lock -r > requirements.txt
+pipenv install -e .
+# test
+pipenv run test
+```
