@@ -10,6 +10,7 @@ pyopenrec = {editable = true, path = "."}
 [dev-packages]
 autopep8 = "*"
 flake8 = "*"
+flake8-import-order = "*"
 pysocks = ">=1.7.1"
 websocket-client = ">=1.2.3"
 
@@ -18,3 +19,4 @@ python_version = "3.8"
 
 [scripts]
 test = "python3 tests/main.py"
+lint = "flake8 pyopenrec"

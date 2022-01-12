@@ -1,8 +1,9 @@
 import json
 import time
-from .video import Video
-from .util.config import AUTHORIZED_API
+
 from .util import http
+from .util.config import AUTHORIZED_API
+from .video import Video
 
 
 class ChatData():

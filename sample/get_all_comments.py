@@ -1,6 +1,7 @@
-from datetime import datetime
-from pyopenrec.comment import Comment
 import time
+from datetime import datetime
+
+from pyopenrec.comment import Comment
 
 
 last_id = 0

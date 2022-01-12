@@ -1,13 +1,14 @@
 import requests
-from .util import http
+
 from .capture import Capture
 from .channel import Channel
 from .chat import Chat
 from .comment import Comment
 from .playlist import Playlist
+from .util import http
+from .util.config import AUTHORIZED_API, HEADERS
 from .video import Video
 from .yell import Yell
-from .util.config import HEADERS, AUTHORIZED_API
 
 
 class Openrec(Capture, Channel, Chat, Comment, Playlist, Video, Yell):
