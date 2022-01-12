@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from .util import http
-from .util.config import EXTERNAL_API, AUTHORIZED_API
+from .util.config import AUTHORIZED_API, EXTERNAL_API
 
 
 class Comment:

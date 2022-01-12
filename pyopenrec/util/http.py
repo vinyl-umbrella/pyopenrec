@@ -1,5 +1,6 @@
-from .config import HEADERS
 import requests
+
+from .config import HEADERS
 
 
 def request(method: str, url: str, params=None, credentials=None, proxy=None) -> dict:

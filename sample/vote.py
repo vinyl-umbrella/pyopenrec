@@ -1,7 +1,9 @@
-from pyopenrec.chat import Chat
-import pyopenrec
 import threading
 import time
+
+import pyopenrec
+from pyopenrec.chat import Chat
+
 import websocket
 
 
