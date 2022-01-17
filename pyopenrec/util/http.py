@@ -25,6 +25,8 @@ def request(method: str, url: str, params=None, credentials=None, proxy=None) ->
         res = requests.post(url, data=params, headers=header, proxies=proxy)
     elif method.upper() == "PUT":
         res = requests.put(url, data=params, headers=header, proxies=proxy)
+    elif method.upper() == "DELETE":
+        return requests.delete(url, headers=header, proxies=proxy).status_code
 
     if res.status_code != 200:
         raise Exception(f"Failed to {method}, {url}\n\t{res.text}")
