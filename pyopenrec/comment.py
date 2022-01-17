@@ -13,6 +13,7 @@ class Comment:
     - Post a comment to vod.
     - Reply to a comment on vod.
     - Post vote
+    - Delete a comment to live stream.
     """
     is_login = False
     _credentials = None
@@ -142,7 +143,7 @@ class Comment:
         }
         return http.request("POST", url, params, self._credentials, proxy=self._proxy)
 
-    def post_vote(self, vid: str, vote_id: str, index):
+    def post_vote(self, vid: str, vote_id: str, index: int):
         """
         Post vote
 
@@ -155,3 +156,15 @@ class Comment:
         url = f"https://apiv5.openrec.tv/everyone/api/v5/movies/{vid}/polls/{vote_id}/votes"
         params = {"vote_index": index}
         return http.request("POST", url, params, self._credentials, proxy=self._proxy)
+
+    def delete_comment(self, vid: str, chat_id: str) -> int:
+        """
+        Delete a comment to live stream.
+
+        param
+        -----
+        vid: video id
+        chat_id: chat id. Get from pyopenrec.comment.get_comment()[*][id]
+        """
+        url = f"https://apiv5.openrec.tv/api/v5/movies/{vid}/chats/{chat_id}"
+        return http.request("DELETE", url, credentials=self._credentials, proxy=self._proxy)
