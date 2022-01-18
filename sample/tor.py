@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import pyopenrec
 
 
@@ -11,7 +13,8 @@ cap_id = input("input capture id: ")
 for _ in range(3):
     # make no login user through tor
     user = pyopenrec.Openrec(proxy=tor_proxy)
+    copied_user = deepcopy(user)
     # post reaction
-    j = user.post_capture_reaction(cap_id, "kawaii")
+    j = copied_user.post_capture_reaction(cap_id, "kawaii")
     if j["data"]:
         print(j["data"])
