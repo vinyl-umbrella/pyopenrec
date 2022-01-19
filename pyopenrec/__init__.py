@@ -31,4 +31,4 @@ There are more programs [here](https://github.com/vinyl-umbrella/pyopenrec/tree/
 
 from .openrec import *
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
