@@ -1,19 +1,7 @@
-import threading
-import time
-
-from pyopenrec.chat import Chat
-
-import websocket
+from pyopenrec.chat import Chat, ChatData
 
 
-def send_ping(ws):
-    while True:
-        time.sleep(25)
-        ws.send("2")
-
-
-def on_m(_, message: str):
-    msg = Chat.chat_parser(message)
+def on_m(msg: ChatData):
     comment_format = "{dt}  {username}({userid})  {m}"
     if msg.type == "chat":
         print(comment_format.format(
@@ -28,28 +16,4 @@ def on_m(_, message: str):
         print(msg.type, msg.data)
 
 
-def on_e(_, err):
-    print("[err]", err)
-
-
-def on_c(_, status, msg):
-    print("[close]", status, msg)
-
-
-def on_o(_):
-    print("[open]")
-
-
-if __name__ == "__main__":
-    uri = Chat.get_ws("n9ze3m2w184")
-    websocket.enableTrace(False)
-    ws = websocket.WebSocketApp(uri,
-                                on_open=on_o,
-                                on_message=on_m,
-                                on_error=on_e,
-                                on_close=on_c)
-
-    th = threading.Thread(target=send_ping, args=(ws,))
-    th.start()
-
-    ws.run_forever()
+Chat.connect_chat("n9ze3m2w184", on_message=on_m)

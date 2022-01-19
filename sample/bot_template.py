@@ -1,17 +1,14 @@
 import json
-import threading
-import time
 from os import path
 
 import pyopenrec
-
-import websocket
+from pyopenrec.chat import ChatData
 
 
 VID = input("Video id: ")
 credentials = "./secret.json"
 if path.isfile(credentials):
-    with open("./sample/secret.json", "r") as f:
+    with open("./secret.json", "r") as f:
         cred = json.load(f)
     OPENREC = pyopenrec.Openrec(credentials=cred)
 else:
@@ -20,14 +17,7 @@ else:
         json.dump(OPENREC._credentials, f, ensure_ascii=False, indent=4)
 
 
-def send_ping(ws):
-    while True:
-        time.sleep(25)
-        ws.send("2")
-
-
-def on_m(_, message: str):
-    msg = OPENREC.chat_parser(message)
+def on_m(msg: ChatData):
     if msg.type == "chat" and msg.data["user_key"] != OPENREC.id:
         # mute検知
         if msg.data["is_muted"]:
@@ -93,28 +83,17 @@ def on_m(_, message: str):
         pass
 
 
-def on_e(_, err):
+def on_e(err):
     print("[err]", err)
 
 
-def on_c(_, status, msg):
+def on_c(status, msg):
     print("[close]", status, msg)
 
 
-def on_o(_):
+def on_o():
     pass
 
 
 if __name__ == "__main__":
-    uri = OPENREC.get_ws(VID)
-    websocket.enableTrace(False)
-    ws = websocket.WebSocketApp(uri,
-                                on_open=on_o,
-                                on_message=on_m,
-                                on_error=on_e,
-                                on_close=on_c)
-
-    th = threading.Thread(target=send_ping, args=(ws,))
-    th.start()
-
-    ws.run_forever()
+    OPENREC.connect_chat(VID, on_open=on_o, on_message=on_m, on_error=on_e, on_close=on_c)
