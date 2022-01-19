@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 requests = ">=2.26"
+websocket-client = ">=1.2.3"
 pyopenrec = {editable = true, path = "."}
 
 [dev-packages]
@@ -12,7 +13,6 @@ autopep8 = "*"
 flake8 = "*"
 flake8-import-order = "*"
 pysocks = ">=1.7.1"
-websocket-client = ">=1.2.3"
 
 [requires]
 python_version = "3.8"

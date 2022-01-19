@@ -1,5 +1,8 @@
 import json
+import threading
 import time
+
+import websocket
 
 from .util import http
 from .util.config import AUTHORIZED_API
@@ -20,6 +23,7 @@ class Chat:
     - Change name color. Premium account only. Login Required.
     - Get chat URI.
     - Parse chat data from websocket.
+    - Connect chat.
     """
     is_login = False
     _credentials = None
@@ -118,3 +122,55 @@ class Chat:
                     ret_data.type = "unknown"
 
         return ret_data
+
+    @staticmethod
+    def connect_chat(vid: str, on_open=None, on_message=None, on_error=None, on_close=None):
+        """
+        connect chat
+
+        param
+        -----
+        vid: video id
+        on_open: Run on connect to chat server.
+            function()
+        on_message: Run on message arrived.
+            function(msg: pyopenrec.chat.ChatData)
+        on_error: Run on error.
+            function(status, msg)
+        on_close: Run on close websocket.
+            function(err)
+        """
+        def _send_ping(ws: websocket.WebSocketApp):
+            while True:
+                time.sleep(25)
+                ws.send("2")
+
+        def _on_m(_, message):
+            if on_message:
+                msg = Chat.chat_parser(message)
+                on_message(msg)
+
+        def _on_o(_):
+            if on_open:
+                on_open()
+
+        def _on_c(_, status, msg):
+            if on_close:
+                on_close(status, msg)
+
+        def _on_e(_, err):
+            if on_error:
+                on_error(err)
+
+        url = Chat.get_ws(vid)
+        websocket.enableTrace(False)
+        ws = websocket.WebSocketApp(url,
+                                    on_open=_on_o,
+                                    on_message=_on_m,
+                                    on_error=_on_e,
+                                    on_close=_on_c
+                                    )
+
+        th = threading.Thread(target=_send_ping, args=(ws,))
+        th.start()
+        ws.run_forever()
