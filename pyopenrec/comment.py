@@ -19,7 +19,7 @@ class Comment:
     _credentials = None
     _proxy = {}
 
-    def get_comment(self, vid: str, from_created_at=datetime(2020, 1, 1, 0, 0, 0), limit=100) -> dict:
+    def get_comment(self, vid: str, from_created_at=datetime(2020, 1, 1, 0, 0, 0), limit=100) -> http.Response:
         """
         Get comments of live stream or vod.
 
@@ -38,7 +38,7 @@ class Comment:
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
-    def get_recent_comment(self, vid: str, limit=100) -> dict:
+    def get_recent_comment(self, vid: str, limit=100) -> http.Response:
         """
         Get recent comments of live stream.
 
@@ -57,7 +57,7 @@ class Comment:
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
-    def get_vod_comment(self, vid: str) -> dict:
+    def get_vod_comment(self, vid: str) -> http.Response:
         """
         Get comments of vod.
 
@@ -68,7 +68,7 @@ class Comment:
         url = f"{EXTERNAL_API}/movies/{vid}/comments"
         return http.request("GET", url, proxy=self._proxy)
 
-    def post_comment(self, vid: str, message: str) -> dict:
+    def post_comment(self, vid: str, message: str) -> http.Response:
         """
         Post a comment to live stream.
 
@@ -90,7 +90,7 @@ class Comment:
 
         return http.request("POST", url, params, self._credentials, proxy=self._proxy)
 
-    def post_template_comment(self, vid: str, comment_num=0) -> dict:
+    def post_template_comment(self, vid: str, comment_num=0) -> http.Response:
         """
         Post a template comment to live stream.
 
@@ -111,7 +111,7 @@ class Comment:
         }
         return http.request("POST", url, params, self._credentials, proxy=self._proxy)
 
-    def post_vod_comment(self, vid: str, message: str) -> dict:
+    def post_vod_comment(self, vid: str, message: str) -> http.Response:
         """
         Post a comment to vod.
 
@@ -129,7 +129,7 @@ class Comment:
         }
         return http.request("POST", url, params, self._credentials, proxy=self._proxy)
 
-    def reply_vod_comment(self, vid: str, comment_id: int, message: str) -> dict:
+    def reply_vod_comment(self, vid: str, comment_id: int, message: str) -> http.Response:
         """
         Reply to a comment on vod.
         """
@@ -143,7 +143,7 @@ class Comment:
         }
         return http.request("POST", url, params, self._credentials, proxy=self._proxy)
 
-    def post_vote(self, vid: str, vote_id: str, index: int):
+    def post_vote(self, vid: str, vote_id: str, index: int) -> http.Response:
         """
         Post vote
 
@@ -157,7 +157,7 @@ class Comment:
         params = {"vote_index": index}
         return http.request("POST", url, params, self._credentials, proxy=self._proxy)
 
-    def delete_comment(self, vid: str, chat_id: str) -> int:
+    def delete_comment(self, vid: str, chat_id: str) -> http.Response:
         """
         Delete a comment to live stream.
 

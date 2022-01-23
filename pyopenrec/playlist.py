@@ -9,7 +9,7 @@ class Playlist:
     """
     _proxy = {}
 
-    def playlists(self, user_id, type, page=1) -> dict:
+    def playlists(self, user_id, type, page=1) -> http.Response:
         """
         Get list of playlists for a specific user.
 
@@ -26,7 +26,7 @@ class Playlist:
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
-    def playlist_contents(self, playlist_id: str) -> dict:
+    def playlist_contents(self, playlist_id: str) -> http.Response:
         """
         Get playlist contents, capture or video.
 

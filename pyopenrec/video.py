@@ -15,7 +15,7 @@ class Video:
     _credentials = None
     _proxy = {}
 
-    def stream_list(self, sort="live_views", page=1) -> dict:
+    def stream_list(self, sort="live_views", page=1) -> http.Response:
         """
         Get current live stream list.
 
@@ -34,7 +34,7 @@ class Video:
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
-    def vod_list(self, page=1) -> dict:
+    def vod_list(self, page=1) -> http.Response:
         """
         Get popular vod list.
 
@@ -49,7 +49,7 @@ class Video:
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
-    def movie_list(self, sort="total_views", page=1) -> dict:
+    def movie_list(self, sort="total_views", page=1) -> http.Response:
         """
         Get uploaded video list.
 
@@ -68,7 +68,7 @@ class Video:
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
-    def video_info(self, vid: str) -> dict:
+    def video_info(self, vid: str) -> http.Response:
         """
         Get video info. (title, thumbnail, date, owner, game etc.)
 
@@ -79,7 +79,7 @@ class Video:
         url = f"{EXTERNAL_API}/movies/{vid}"
         return http.request("GET", url, proxy=self._proxy)
 
-    def video_detail(self, vid: str) -> dict:
+    def video_detail(self, vid: str) -> http.Response:
         """
         Get video detail info.
         If you are using a premium account, you can get stream file url.
@@ -94,7 +94,7 @@ class Video:
         url = f"{AUTHORIZED_API}/movies/{vid}/detail"
         return http.request("GET", url, credentials=self._credentials, proxy=self._proxy)
 
-    def timeline(self, type: int):
+    def timeline(self, type: int) -> http.Response:
         """
         Get your timeline. Login Required.
 
@@ -132,8 +132,8 @@ class Video:
         vid: video id
         """
         mdata = self.video_info(vid)
-        if mdata["data"]:
-            mdata = mdata["data"]
+        if mdata.data:
+            mdata = mdata.data
 
             # subscription
             if mdata["public_type"] == "member":

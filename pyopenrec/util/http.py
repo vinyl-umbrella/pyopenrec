@@ -1,9 +1,21 @@
 import requests
+from typing import Any
 
 from .config import HEADERS
 
 
-def request(method: str, url: str, params=None, credentials=None, proxy=None) -> dict:
+class Response:
+    """
+    status: HTTP status
+    url: requested url
+    data: return value
+    """
+    status: int
+    url: str
+    data: Any
+
+
+def request(method: str, url: str, params=None, credentials=None, proxy=None) -> Response:
     """
     param
     -----
@@ -26,19 +38,15 @@ def request(method: str, url: str, params=None, credentials=None, proxy=None) ->
     elif method.upper() == "PUT":
         res = requests.put(url, data=params, headers=header, proxies=proxy)
     elif method.upper() == "DELETE":
-        return requests.delete(url, headers=header, proxies=proxy).status_code
+        return requests.delete(url, headers=header, proxies=proxy)
 
     if res.status_code != 200:
         raise Exception(f"Failed to {method}, {url}\n\t{res.text}")
 
-    retObj = {
-        "status": 0,
-        "url": res.url,
-        "data": {}
-    }
-
+    response = Response()
     try:
-        retObj["status"] = res.status_code
+        response.status = res.status_code
+        response.url = res.url
         j = res.json()
 
         if "message" in j:
@@ -47,12 +55,12 @@ def request(method: str, url: str, params=None, credentials=None, proxy=None) ->
         if "data" in j and "items" in j["data"]:
             items = j["data"]["items"]
             if list(j["data"].keys()) == ['type', 'items'] and isinstance(items, list):
-                retObj["data"] = items
+                response.data = items
             else:
-                retObj["data"] = j["data"]
+                response.data = j["data"]
         else:
-            retObj["data"] = j
-        return retObj
+            response.data = j
+        return response
 
     except Exception as e:
         raise e

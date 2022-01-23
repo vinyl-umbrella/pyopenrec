@@ -10,7 +10,7 @@ class Yell:
     """
     _proxy = {}
 
-    def yell_rank_in_video(self, vid: str, page=1):
+    def yell_rank_in_video(self, vid: str, page=1) -> http.Response:
         """
         Get yell list in the order of points in a specific video.
 
@@ -26,7 +26,7 @@ class Yell:
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
-    def yell_rank_in_user(self, user_id: str, month=None, page=1):
+    def yell_rank_in_user(self, user_id: str, month=None, page=1) -> http.Response:
         """
         Get yell list in the order of points in a specific user.
 

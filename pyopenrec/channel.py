@@ -15,7 +15,7 @@ class Channel:
     _credentials = None
     _proxy = {}
 
-    def channel_rank(self, period, date=None, page=1) -> dict:
+    def channel_rank(self, period: str, date=None, page=1) -> http.Response:
         """
         Get current channel ranking.
 
@@ -33,7 +33,7 @@ class Channel:
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
-    def channel_info(self, user_id: str) -> dict:
+    def channel_info(self, user_id: str) -> http.Response:
         """
         Get user info. (nickname, introduction, register date, and etc.)
 
@@ -44,7 +44,7 @@ class Channel:
         url = f"{EXTERNAL_API}/channels/{user_id}"
         return http.request("GET", url, proxy=self._proxy)
 
-    def subscription_info(self, user_id: str) -> dict:
+    def subscription_info(self, user_id: str) -> http.Response:
         """
         Get subscription info.
 
@@ -55,7 +55,7 @@ class Channel:
         url = f"{EXTERNAL_API}/subs-channels/{user_id}"
         return http.request("GET", url, proxy=self._proxy)
 
-    def contents(self, user_id: str, type: int) -> dict:
+    def contents(self, user_id: str, type: int) -> http.Response:
         """
         Get coming ups, vods and current stream list of a specific user.
 
@@ -74,7 +74,7 @@ class Channel:
         }
         return http.request("GET", url, params=params, proxy=self._proxy)
 
-    def _get_follow(self, user_id: str, is_follow: int, page: int):
+    def _get_follow(self, user_id: str, is_follow: int, page: int) -> http.Response:
         """
         param
         -----
@@ -93,7 +93,7 @@ class Channel:
         }
         return http.request("GET", url, params, credentials=self._credentials, proxy=self._proxy)
 
-    def get_follow(self, user_id: str, page=1):
+    def get_follow(self, user_id: str, page=1) -> http.Response:
         """
         get `user_id`'s follow list
 
@@ -104,7 +104,7 @@ class Channel:
         """
         return self._get_follow(user_id, 1, page)
 
-    def get_follower(self, user_id: str, page=1):
+    def get_follower(self, user_id: str, page=1) -> http.Response:
         """
         get `user_id`'s followers list
 
@@ -124,8 +124,8 @@ class Channel:
         user_id: user id
         """
         j = self.channel_info(user_id)
-        if j["status"] == 200 and j["data"]:
-            if j["data"]["is_live"]:
+        if j.status == 200 and j.data:
+            if j.data["is_live"]:
                 return True
             else:
                 return False
