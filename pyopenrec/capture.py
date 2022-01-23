@@ -12,7 +12,7 @@ class Capture:
     _credentials = None
     _proxy = {}
 
-    def popular_capture(self, period="daily", is_channel_unique=True, page=1) -> dict:
+    def popular_capture(self, period="daily", is_channel_unique=True, page=1) -> http.Response:
         """
         Get popular capture.
 
@@ -30,7 +30,7 @@ class Capture:
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
-    def capture_list(self, channel=None, vid=None, sort="views", sort_direction="DESC", page=1) -> dict:
+    def capture_list(self, channel=None, vid=None, sort="views", sort_direction="DESC", page=1) -> http.Response:
         """
         Get capture list.
 
@@ -52,7 +52,7 @@ class Capture:
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
-    def capture_info(self, cap_id: str) -> dict:
+    def capture_info(self, cap_id: str) -> http.Response:
         """
         Get capture info. (title, parent_stream, views, creater, reactions and etc.)
 
@@ -63,7 +63,7 @@ class Capture:
         url = f"{EXTERNAL_API}/captures/{cap_id}"
         return http.request("GET", url, proxy=self._proxy)
 
-    def post_capture_reaction(self, cap_id, reaction) -> dict:
+    def post_capture_reaction(self, cap_id: str, reaction: str) -> http.Response:
         """
         Post capture reaction. Login Required.
 

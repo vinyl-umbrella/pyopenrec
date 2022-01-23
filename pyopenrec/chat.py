@@ -14,8 +14,8 @@ class ChatData():
     type: "chat" || "live_viewers" || "stream_end" || "stream_start" || "ban" || "unban" || "add_staff" || "remove_staff" || "need_refresh" || "info" || "telop" || "subscription" || "vote_start" || "vote_progress" || "vote_end" || "unknown"
     data: {}
     """
-    type = ""
-    data = {}
+    type: str
+    data: dict
 
 
 class Chat:
@@ -29,7 +29,7 @@ class Chat:
     _credentials = None
     _proxy = {}
 
-    def update_name_color(self, color: str) -> dict:
+    def update_name_color(self, color: str) -> http.Response:
         """
         Change name color. Premium account only. Login Required.
         param: hex color code (e.g. #201E2F)
@@ -52,7 +52,7 @@ class Chat:
         """
         v = Video()
         data = v.video_info(vid)
-        mid = data["data"]["movie_id"]
+        mid = data.data["movie_id"]
         now = int(time.time())
         ws = f"wss://chat.openrec.tv/socket.io/?movieId={mid}&connectAt={now}&isExcludeLiveViewers=false&EIO=3&transport=websocket"
         return ws
