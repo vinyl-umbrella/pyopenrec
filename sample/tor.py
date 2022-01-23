@@ -16,5 +16,5 @@ for _ in range(3):
     copied_user = deepcopy(user)
     # post reaction
     j = copied_user.post_capture_reaction(cap_id, "kawaii")
-    if j["data"]:
-        print(j["data"])
+    if j.data:
+        print(j.data)
