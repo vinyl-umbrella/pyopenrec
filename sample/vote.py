@@ -1,16 +1,5 @@
-import threading
-import time
-
 import pyopenrec
 from pyopenrec.chat import Chat
-
-import websocket
-
-
-def send_ping(ws):
-    while True:
-        time.sleep(25)
-        ws.send("2")
 
 
 def on_m(_, message: str):
@@ -41,25 +30,6 @@ def on_e(_, err):
     print("[err]", err)
 
 
-def on_c(_, status, msg):
-    print("[close]", status, msg)
-
-
-def on_o(_):
-    print("[open]")
-
-
 if __name__ == "__main__":
-    vid = input("vid: ")
-    uri = Chat.get_ws(vid)
-    websocket.enableTrace(False)
-    ws = websocket.WebSocketApp(uri,
-                                on_open=on_o,
-                                on_message=on_m,
-                                on_error=on_e,
-                                on_close=on_c)
-
-    th = threading.Thread(target=send_ping, args=(ws,))
-    th.start()
-
-    ws.run_forever()
+    vid = input("video id: ")
+    Chat.connect_chat(vid, on_message=on_m, on_error=on_e)
