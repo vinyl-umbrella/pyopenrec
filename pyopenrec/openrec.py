@@ -88,13 +88,12 @@ class Openrec(Capture, Channel, Chat, Comment, Playlist, Video, Yell):
         if self.is_login:
             url = AUTHORIZED_API + "/users/me"
 
-            info = http.request(
-                "GET", url, credentials=self._credentials, proxy=self._proxy)
-            if info["status"] != 200:
+            info = http.request("GET", url, credentials=self._credentials, proxy=self._proxy)
+            if info.status != 200:
                 raise Exception(info)
 
-            self.id = info["data"][0]["id"]
-            self.name = info["data"][0]["nickname"]
+            self.id = info.data[0]["id"]
+            self.name = info.data[0]["nickname"]
         else:
             header = {**HEADERS, **self._credentials}
             r = requests.get("https://www.openrec.tv/api-tv/user",
