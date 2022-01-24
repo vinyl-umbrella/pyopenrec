@@ -1,5 +1,6 @@
-import requests
 from typing import Any
+
+import requests
 
 from .config import HEADERS
 

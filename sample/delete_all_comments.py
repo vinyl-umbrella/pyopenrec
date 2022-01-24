@@ -25,7 +25,7 @@ while True:
             print("DELETE", comment["user"]["nickname"], comment["message"])
             user.delete_comment(vid, str(comment["id"]))
 
-    last_id = comments["data"][-1]["id"]
-    dt = datetime.fromisoformat(comments["data"][-1]["posted_at"])
+    last_id = comments.data[-1]["id"]
+    dt = datetime.fromisoformat(comments.data[-1]["posted_at"])
 
     time.sleep(1)

@@ -85,7 +85,7 @@ class Channel:
         page: page number
         """
         url = "https://www.openrec.tv/api/v3/get_follow_list"
-        recxuser_id = self.channel_info(user_id)["data"]["recxuser_id"]
+        recxuser_id = self.channel_info(user_id).data["recxuser_id"]
         params = {
             "recxuser_id": recxuser_id,
             "is_follow": is_follow,

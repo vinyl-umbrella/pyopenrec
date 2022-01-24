@@ -141,8 +141,8 @@ class Video:
                     raise Exception("Login Required.")
 
                 detail = self.video_detail(vid)
-                if detail["data"]:
-                    return detail["data"][0]["media"]["url"]
+                if detail.data:
+                    return detail.data[0]["media"]["url"]
             # streaming
             elif mdata["onair_status"] == 1:
                 return mdata["media"]["url_ull"]
