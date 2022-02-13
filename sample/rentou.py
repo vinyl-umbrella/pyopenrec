@@ -22,7 +22,7 @@ def post_template_comment(vid: str):
 
 
 while True:
-    subprocess.run(["sudo", "-p", "database", "service", "tor", "restart"])
+    subprocess.run(["service", "tor", "restart"])
     time.sleep(5)
 
     p = Pool(5)
