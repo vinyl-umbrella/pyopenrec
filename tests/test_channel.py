@@ -30,7 +30,7 @@ class TestChannel(unittest.TestCase):
         self.assertIsInstance(data.data, dict)
 
     def test_contents(self):
-        data = self.c.contents("indegnasen", 2)
+        data = self.c.contents("indegnasen", 2, page=2)
         self.assertEqual(200, data.status)
         self.assertIsNotNone(data.url)
         self.assertIsNotNone(data.data)
