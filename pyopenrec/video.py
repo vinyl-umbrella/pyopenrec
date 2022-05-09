@@ -5,7 +5,7 @@ from .util.config import AUTHORIZED_API, EXTERNAL_API
 class Video:
     """
     - Get current live streamlist.
-    - Get popular vod list.
+    - Get vod list.
     - Get uploaded video list.
     - Get video info (title, thumbnail, date, owner, game etc.)
     - Get your timeline. Login Required.
@@ -34,18 +34,21 @@ class Video:
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
-    def vod_list(self, page=1) -> http.Response:
+    def vod_list(self, sort, page=1) -> http.Response:
         """
-        Get popular vod list.
+        Get vod list.
 
         param
         -----
         page: page number
+        sort:
+            "total_views" | "created_at" | "-created_at" | "schedule_at" | "total_yells" | "-total_yells" | "popularity" | "published_at" | "-published_at"
         """
-        url = f"{EXTERNAL_API}/popular-movies"
+        url = f"{EXTERNAL_API}/movies"
         params = {
-            "page": page,
-            "popular_type": "archive"
+            "onair_status": 2,
+            "sort": sort,
+            "page": page
         }
         return http.request("GET", url, params, proxy=self._proxy)
 
