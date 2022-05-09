@@ -14,6 +14,7 @@ class Comment:
     - Reply to a comment on vod.
     - Post vote
     - Delete a comment to live stream.
+    - Check if a word has banned word.
     """
     is_login = False
     _credentials = None
@@ -166,5 +167,23 @@ class Comment:
         vid: video id
         chat_id: chat id. Get from pyopenrec.comment.get_comment()[*][id]
         """
-        url = f"https://apiv5.openrec.tv/api/v5/movies/{vid}/chats/{chat_id}"
+        url = f"{AUTHORIZED_API}/movies/{vid}/chats/{chat_id}"
         return http.request("DELETE", url, credentials=self._credentials, proxy=self._proxy)
+
+    def has_ng_word(self, word: str) -> bool:
+        """
+        Check if a word is ng word.
+
+        param
+        -----
+        word: word you want to check
+        """
+        if not self.is_login:
+            raise Exception("Login Required.")
+
+        url = "https://www.openrec.tv/api/v3/user/check_banned_word"
+        params = {
+            "nickname": word
+        }
+        res = http.request("GET", url, params, self._credentials, self._proxy)
+        return bool(res.data["data"]["has_banned_word"])
