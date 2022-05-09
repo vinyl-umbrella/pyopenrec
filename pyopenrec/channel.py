@@ -55,7 +55,7 @@ class Channel:
         url = f"{EXTERNAL_API}/subs-channels/{user_id}"
         return http.request("GET", url, proxy=self._proxy)
 
-    def contents(self, user_id: str, type: int) -> http.Response:
+    def contents(self, user_id: str, type: int, sort="schedule_at", page=1) -> http.Response:
         """
         Get coming ups, vods and current stream list of a specific user.
 
@@ -66,11 +66,16 @@ class Channel:
             0: coming up
             1: now streaming
             2: vod
+        sort:
+            "total_views" | "created_at" | "-created_at" | "schedule_at" | "total_yells" | "-total_yells" | "popularity" | "published_at" | "-published_at"
+        page: page number
         """
         url = f"{EXTERNAL_API}/movies"
         params = {
             "channel_ids": user_id,
-            "onair_status": type
+            "onair_status": type,
+            "sort": sort,
+            "page": page
         }
         return http.request("GET", url, params=params, proxy=self._proxy)
 
