@@ -36,6 +36,19 @@ class TestChannel(unittest.TestCase):
         self.assertIsNotNone(data.data)
         self.assertIsInstance(data.data, list)
 
+    def test_get_follow(self):
+        data = self.c.get_follow("indegnasen")
+        self.assertEqual(200, data.status)
+        self.assertIsNotNone(data.url)
+        self.assertIsNotNone(data.data)
+        self.assertIsInstance(data.data, list)
+
+    def test_get_follower(self):
+        data = self.c.get_follower("indegnasen")
+        self.assertEqual(200, data.status)
+        self.assertIsNotNone(data.url)
+        self.assertIsNotNone(data.data)
+
     def test_is_streaming(self):
         v = self.v.stream_list()
         user_id = v.data[0]["channel"]["id"]
