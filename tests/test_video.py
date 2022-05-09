@@ -14,7 +14,7 @@ class TestVideo(unittest.TestCase):
         self.assertIsInstance(data.data, list)
 
     def test_vod_list(self):
-        data = self.v.vod_list(page=2)
+        data = self.v.vod_list(sort="created_at", page=2)
         self.assertEqual(200, data.status)
         self.assertIsNotNone(data.url)
         self.assertIsNotNone(data.data)
