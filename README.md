@@ -21,7 +21,7 @@ with open("sample.json", "w") as f:
     json.dump(j, f, indent=2, ensure_ascii=False)
 ```
 
-<!-- python3 setup.py sdist; pip install dist/pyopenrec-0.0.4.tar.gz -->
+<!-- python3 setup.py sdist; pip install dist/pyopenrec-0.0.5.tar.gz -->
 ### More Samples
 There are more programs [here](https://github.com/vinyl-umbrella/pyopenrec/tree/main/sample)
 
