@@ -25,7 +25,7 @@ with open("sample.json", "w") as f:
 ### More Samples
 There are more programs [here](https://github.com/vinyl-umbrella/pyopenrec/tree/main/sample)
 
-[OPENREC.tv API LIST](https://futonchan-openchat.web.app/api)
+[OPENREC.tv API LIST](https://futonchan-openchat.web.app/openrecapi)
 
 ## Dev
 ```sh
