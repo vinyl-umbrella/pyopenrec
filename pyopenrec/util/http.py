@@ -34,7 +34,9 @@ def get(
     if res.ok:
         return j
     else:
-        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j['message']}")
+        raise exceptions.PyopenrecException(
+            f"Error {res.status_code}: {j.get('message')}"
+        )
 
 
 def post(
@@ -65,7 +67,10 @@ def post(
     if res.ok and j.get("status") == 0:
         return j
     else:
-        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j['message']}")
+        print(j)
+        raise exceptions.PyopenrecException(
+            f"Error {res.status_code}: {j.get('message')}"
+        )
 
 
 def put(
@@ -96,7 +101,9 @@ def put(
     if res.ok:
         return j
     else:
-        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j['message']}")
+        raise exceptions.PyopenrecException(
+            f"Error {res.status_code}: {j.get('message')}"
+        )
 
 
 def delete(
@@ -125,4 +132,6 @@ def delete(
     if res.ok:
         return j
     else:
-        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j['message']}")
+        raise exceptions.PyopenrecException(
+            f"Error {res.status_code}: {j.get('message')}"
+        )
