@@ -1,189 +1,57 @@
-from datetime import datetime
+from typing import Optional
 
-from .util import http
-from .util.config import AUTHORIZED_API, EXTERNAL_API
+from .user import User
 
 
 class Comment:
-    """
-    - Get comments of live stream or vod.
-    - Get recent comments of live stream.
-    - Get comments of vod.
-    - Post a comment to live stream.
-    - Post a comment to vod.
-    - Reply to a comment on vod.
-    - Post vote
-    - Delete a comment to live stream.
-    - Check if a word has banned word.
-    """
-    is_login = False
-    _credentials = None
-    _proxy = {}
+    id: int = None
+    message: str = None
+    posted_at: str = None  # e.g. "2021-08-01T12:00:00.000Z"
+    user: User = None
+    stamp: dict = None
+    capture: dict = None
 
-    def get_comment(self, vid: str, from_created_at=datetime(2020, 1, 1, 0, 0, 0), limit=100) -> http.Response:
+    def __init__(
+        self,
+        comment_from_rest: Optional[dict] = None,
+        comment_from_ws: Optional[dict] = None,
+    ):
         """
-        Get comments of live stream or vod.
-
-        param
-        -----
-        vid: video id
-        from_created_at: datetime
-        limit: number of comments. max 300
+        Openrec comment object.
+        Args:
+            comment_from_rest (dict, optional): comment from rest api
+            comment_from_ws (dict, optional): comment from websocket
         """
-        url = f"{EXTERNAL_API}/movies/{vid}/chats"
-        from_at = from_created_at.astimezone().isoformat(timespec="seconds")
-        params = {
-            "from_created_at": from_at,
-            "is_including_system_message": "false",
-            "limit": limit
-        }
-        return http.request("GET", url, params, proxy=self._proxy)
 
-    def get_recent_comment(self, vid: str, limit=100) -> http.Response:
-        """
-        Get recent comments of live stream.
+        # set comment info from rest api
+        if comment_from_rest:
+            self.id = comment_from_rest.get("id", None)
+            self.message = comment_from_rest.get("message", None)
+            self.posted_at = comment_from_rest.get(
+                "posted_at", None
+            ) or comment_from_rest.get("created_at", None)
 
-        param
-        -----
-        vid: video id
-        limit: number of comments. max 300
-        """
-        now = datetime.now().astimezone().isoformat(timespec="seconds")
-        url = f"{EXTERNAL_API}/movies/{vid}/chats"
+            self.stamp = comment_from_rest.get("stamp", None)
+            self.capture = comment_from_rest.get("capture", None)
 
-        params = {
-            "to_created_at": now,
-            "is_including_system_message": "false",
-            "limit": limit
-        }
-        return http.request("GET", url, params, proxy=self._proxy)
+            self.user = User(
+                comment_from_rest["user"]["id"], comment_from_rest.get("user", None)
+            )
 
-    def get_vod_comment(self, vid: str) -> http.Response:
-        """
-        Get comments of vod.
+        # set comment info from websocket
+        elif comment_from_ws:
+            self.id = comment_from_ws.get("chat_id", None)
+            self.message = comment_from_ws.get("message", None)
+            self.posted_at = comment_from_ws.get("message_dt", None)
+            self.stamp = comment_from_ws.get("stamp", None)
+            self.capture = comment_from_ws.get("capture", None)
 
-        param
-        -----
-        vid: video id
-        """
-        url = f"{EXTERNAL_API}/movies/{vid}/comments"
-        return http.request("GET", url, proxy=self._proxy)
-
-    def post_comment(self, vid: str, message: str) -> http.Response:
-        """
-        Post a comment to live stream.
-
-        param
-        -----
-        vid: video id
-        message: message which you want to post
-        """
-        if not self.is_login:
-            raise Exception("Login Required.")
-        url = f"{AUTHORIZED_API}/movies/{vid}/chats"
-        params = {
-            "message": message,
-            "quality_type": 0,
-            "league_key": "",
-            "to_user_id": "",
-            "consented_chat_terms": "false"
-        }
-
-        return http.request("POST", url, params, self._credentials, proxy=self._proxy)
-
-    def post_template_comment(self, vid: str, comment_num=0) -> http.Response:
-        """
-        Post a template comment to live stream.
-
-        param
-        -----
-        vid: video id
-        comment_num:
-        0: こんにちは！, 1: こんばんは！, 2: わこつ, 3: 神, 4: ナイス, 5: お疲れ様です！, 6: うまい, 7: おはようございます, 8: 初見です, 9: きたよ, 10: gg, 11: ドンマイ, 12: いいね, 13: おめでとう！, 14: おやすみ
-        """
-        url = f"https://apiv5.openrec.tv/everyone/api/v5/movies/{vid}/chats"
-        comments = [
-            "19jlkj1knm7", "lj0gzn767dm", "gje0zy1z7w2", "5n39zmgz41g", "qryvzroz057", "8jw9z3mkrd1", "x9rozpqkm3q", "j9pmkq1zw27", "glew6d8zdmn", "enq56l1zpl4", "o04vz0w6d1m", "1yw4k90knqx", "g9evzxykxd4", "48w2zenzdvj", "q0jl6oekm97"
-        ]
-        params = {
-            "fixed_phrase_id": comments[comment_num],
-            "messaged_at": "",
-            "quality_type": 2
-        }
-        return http.request("POST", url, params, self._credentials, proxy=self._proxy)
-
-    def post_vod_comment(self, vid: str, message: str) -> http.Response:
-        """
-        Post a comment to vod.
-
-        param
-        -----
-        vid: video id
-        message: message which you want to post
-        """
-        if not self.is_login:
-            raise Exception("Login Required.")
-
-        url = f"{AUTHORIZED_API}/movies/{vid}/comments"
-        params = {
-            "message": message
-        }
-        return http.request("POST", url, params, self._credentials, proxy=self._proxy)
-
-    def reply_vod_comment(self, vid: str, comment_id: int, message: str) -> http.Response:
-        """
-        Reply to a comment on vod.
-        """
-        if not self.is_login:
-            raise Exception("Login Required.")
-
-        url = f"{AUTHORIZED_API}/movies/{vid}/comments/{str(comment_id)}/replies"
-        params = {
-            "message": message,
-            "consented_comment_terms": "true"
-        }
-        return http.request("POST", url, params, self._credentials, proxy=self._proxy)
-
-    def post_vote(self, vid: str, vote_id: str, index: int) -> http.Response:
-        """
-        Post vote
-
-        param
-        -----
-        vid: video id
-        vote_id: vote id. Get from websocket
-        index: your choise
-        """
-        url = f"https://apiv5.openrec.tv/everyone/api/v5/movies/{vid}/polls/{vote_id}/votes"
-        params = {"vote_index": index}
-        return http.request("POST", url, params, self._credentials, proxy=self._proxy)
-
-    def delete_comment(self, vid: str, chat_id: str) -> http.Response:
-        """
-        Delete a comment to live stream.
-
-        param
-        -----
-        vid: video id
-        chat_id: chat id. Get from pyopenrec.comment.get_comment()[*][id]
-        """
-        url = f"{AUTHORIZED_API}/movies/{vid}/chats/{chat_id}"
-        return http.request("DELETE", url, credentials=self._credentials, proxy=self._proxy)
-
-    def has_ng_word(self, word: str) -> bool:
-        """
-        Check if a word is ng word.
-
-        param
-        -----
-        word: word you want to check
-        """
-        if not self.is_login:
-            raise Exception("Login Required.")
-
-        url = "https://www.openrec.tv/api/v3/user/check_banned_word"
-        params = {
-            "nickname": word
-        }
-        res = http.request("GET", url, params, self._credentials, self._proxy)
-        return bool(res.data["data"]["has_banned_word"])
+            user_data = {
+                "id": comment_from_ws.get("user_key", None),
+                "nickname": comment_from_ws.get("user_name", None),
+                "l_icon_image_url": comment_from_ws.get("user_icon", None),
+                "is_premium": comment_from_ws.get("is_premium", None),
+                "is_fresh": comment_from_ws.get("is_fresh", None),
+                "is_warned": comment_from_ws.get("is_warned", None),
+            }
+            self.user = User(comment_from_ws.get("user_key", None), user_data)

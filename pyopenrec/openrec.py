@@ -1,102 +1,115 @@
 import requests
+from typing import Optional
 
-from .capture import Capture
-from .channel import Channel
+from .etc import OpenrecCredentials
 from .chat import Chat
-from .comment import Comment
-from .playlist import Playlist
-from .util import http
-from .util.config import AUTHORIZED_API, HEADERS
+from .user import User
 from .video import Video
-from .yell import Yell
+from .util import const, exceptions
+
+# from .comment import Comment
 
 
-class Openrec(Capture, Channel, Chat, Comment, Playlist, Video, Yell):
-    """
-    # OPENREC.tv api client.
+class Openrec:
+    credentials: OpenrecCredentials = None
 
-    If you don't give email and password, you will get credentials of non-login-user.
-    Non-login-user can post capture rection, but cannot post comment, get own user info and update chat config.
-
-    If you use OAuth, you cannot login with this function. You need to set credentials (uuid, token, random, access-token)
-
-    param
-    -----
-    email: str
-        YOUR EMAIL
-    password: str
-        YOUR PASSWORD
-    credentials: dict
-        {
-            "uuid": "",
-            "token": "",
-            "random": "",
-            "access-token": ""
-        }
-    proxy: dict
-        {
-            "http": "",
-            "https": ""
-        }
-    """
-
-    is_login = False
-    id = ""
-    name = ""
-    _credentials = {}
-    _proxy = {}
-
-    def __init__(self, email=None, password=None, credentials=None, proxy=None):
-        self._proxy = proxy
-        if credentials:
-            self._credentials = credentials
-            self.is_login = True
-        else:
-            with requests.session() as s:
-                r = s.post("https://www.openrec.tv/api-tv/user",
-                           headers=HEADERS, proxies=self._proxy)
-                if r.status_code != 200:
-                    raise Exception("Failed to get initial param.", r.text)
-
-                self._credentials["uuid"] = r.cookies["uuid"]
-                self._credentials["token"] = r.cookies["token"]
-                self._credentials["random"] = r.cookies["random"]
-
-                if email is not None and password is not None:
-                    param = {"mail": email, "password": password}
-                    cookie = {"AWSELB": "", "AWSELBCORS": "",
-                              **self._credentials}
-
-                    r = s.post("https://www.openrec.tv/viewapp/v4/mobile/user/login",
-                               data=param, headers=HEADERS, cookies=cookie, proxies=self._proxy)
-                    if r.status_code != 200:
-                        raise Exception("Failed to login.", r.text)
-
-                    # self._credentials["sessid"] = r.cookies["PHPSESSID"]
-                    self._credentials["access-token"] = r.cookies["access_token"]
-                    self._credentials["uuid"] = r.cookies["uuid"]
-                    self._credentials["token"] = r.cookies["token"]
-                    self._credentials["random"] = r.cookies["random"]
-                    self.is_login = True
-
-        self.me()
-
-    def me(self):
+    def __init__(self, email: Optional[str] = None, password: Optional[str] = None):
         """
-        Get login user info.
+        Args:
+            email (str, optional): email address
+            password (str, optional): password
         """
-        if self.is_login:
-            url = AUTHORIZED_API + "/users/me"
+        if email and password:
+            self.credentials = self.__login(email, password)
 
-            info = http.request("GET", url, credentials=self._credentials, proxy=self._proxy)
-            if info.status != 200:
-                raise Exception(info)
+    def __login(self, email: str, password: str) -> OpenrecCredentials:
+        """
+        Login to openrec.tv.
+        Args:
+            email (str): email address
+            password (str): password
+        Returns:
+            OpenrecCredentials: credentials(uuid, token, random, access_token)
+        """
+        credentials = OpenrecCredentials()
+        if not email or not password:
+            raise exceptions.PyopenrecException("Email or password is not provided.")
 
-            self.id = info.data[0]["id"]
-            self.name = info.data[0]["nickname"]
-        else:
-            header = {**HEADERS, **self._credentials}
-            r = requests.get("https://www.openrec.tv/api-tv/user",
-                             headers=header, cookies=self._credentials, proxies=self._proxy)
-            j = r.json()
-            self.name = j["name"]
+        with requests.session() as s:
+            r = s.post(
+                "https://www.openrec.tv/api-tv/user",
+                headers=const.HEADERS,
+            )
+            if not r.ok:
+                raise exceptions.PyopenrecException(
+                    "Failed to get initial param.", r.text
+                )
+
+            credentials.uuid = r.cookies.get("uuid", None)
+            credentials.token = r.cookies.get("token", None)
+            credentials.random = r.cookies.get("random", None)
+
+            param = {"mail": email, "password": password}
+            cookie = {
+                "AWSELB": "",
+                "AWSELBCORS": "",
+                "uuid": credentials.uuid,
+                "token": credentials.token,
+                "random": credentials.random,
+            }
+
+            r = s.post(
+                "https://www.openrec.tv/viewapp/v4/mobile/user/login",
+                data=param,
+                headers=const.HEADERS,
+                cookies=cookie,
+            )
+            if not r.ok:
+                raise exceptions.PyopenrecException("Failed to login.", r.text)
+
+            # credentials.sessid = r.cookies.get("PHPSESSID")
+            credentials.access_token = r.cookies.get("access_token")
+            credentials.uuid = r.cookies.get("uuid")
+            credentials.token = r.cookies.get("token")
+            credentials.random = r.cookies.get("random")
+
+        return credentials
+
+    @staticmethod
+    def Chat():
+        """
+        Get chat object.
+        Returns:
+            Chat: chat object
+        """
+        return Chat()
+
+    def User(
+        self,
+        user_id: str,
+        user_data: Optional[dict] = None,
+    ):
+        """
+        Get user data.
+        Args:
+            user_id (str): user id
+            user_data (dict, optional): user data. If you already have user data, you can pass it to this function.
+        Returns:
+            User: user object
+        """
+        return User(user_id, user_data, self.credentials)
+
+    def Video(
+        self,
+        video_id: str,
+        video_data: Optional[dict] = None,
+    ):
+        """
+        Get video data.
+        Args:
+            video_id (str): video id
+            video_data (dict, optional): video data. If you already have video data, you can pass it to this function.
+        Returns:
+            Video: video object
+        """
+        return Video(video_id, video_data, self.credentials)
