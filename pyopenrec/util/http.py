@@ -62,7 +62,7 @@ def post(
             f"Invalid json response from {url}: {res.status_code}"
         )
 
-    if res.ok:
+    if res.ok and j.get("status") == 0:
         return j
     else:
         raise exceptions.PyopenrecException(f"Error {res.status_code}: {j['message']}")
