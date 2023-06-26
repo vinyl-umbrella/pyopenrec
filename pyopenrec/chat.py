@@ -1,176 +1,182 @@
 import json
-import threading
 import time
-
+import threading
 import websocket
 
-from .util import http
-from .util.config import AUTHORIZED_API
+from typing import Callable, Optional, Union
+
+from .comment import Comment
 from .video import Video
+from .util.enums import ChatType
 
 
-class ChatData():
+class ChatData:
     """
-    type: "chat" || "live_viewers" || "stream_end" || "stream_start" || "ban" || "unban" || "add_staff" || "remove_staff" || "need_refresh" || "info" || "telop" || "subscription" || "vote_start" || "vote_progress" || "vote_end" || "unknown"
-    data: {}
+    Chat data from websocket.
     """
-    type: str
-    data: dict
+
+    type: int = None
+    data: Union[Comment, dict] = None
+
+    def __init__(self, type: int, data: dict):
+        self.type = type
+        self.data = data
+
+    @property
+    def type_name(self) -> str:
+        try:
+            return ChatType(self.type).name
+        except ValueError:
+            return "unknown"
+
+    # example of data
+    # info
+    #   movie_id: int
+    #   live_type: int
+    #   onair_status: int # 1: onair 2: ?
+    #   chat_id: int
+    #   message: str # e.g. タイトルが圧倒的好評なPinapple on Pizzaやるぞ！！に変更されました。
+    #   message_en: str # e.g. The title has been changed to 圧倒的好評なPinapple on Pizzaやるぞ！！.
+    #   message_ko: str # e.g. 제목이 圧倒的好評なPinapple on Pizzaやるぞ！！로 변경되었습니다.
+    #   message_zh: str # e.g. 标题已经更新成圧倒的好評なPinapple on Pizzaやるぞ！！'
+    #   system_message: dict
+    #     type: str # e.g. change_live_title
+    #     style: int
+    #     poll: ?
+    #     user: ?
+    #     fes_event: dict
+    #     cre_dt: str # e.g. '2023-06-24 14:51:53'
 
 
 class Chat:
-    """
-    - Change name color. Premium account only. Login Required.
-    - Get chat URI.
-    - Parse chat data from websocket.
-    - Connect chat.
-    """
-    is_login = False
-    _credentials = None
-    _proxy = {}
-
-    def update_name_color(self, color: str) -> http.Response:
-        """
-        Change name color. Premium account only. Login Required.
-        param: hex color code (e.g. #201E2F)
-        """
-        if not self.is_login:
-            raise Exception("Login Required.")
-
-        url = f"{AUTHORIZED_API}/users/me/chat-setting"
-        params = {"name_color": color}
-        return http.request("PUT", url, params, self._credentials, proxy=self._proxy)
-
     @staticmethod
-    def get_ws(vid: str) -> str:
+    def __get_ws_url(vid: str) -> str:
         """
-        Get chat URI.
-
-        param
-        -----
-        vid: video id
+        Get the websocket url for the chat server.
+        Args:
+            vid: video id
+        Returns:
+            str: websocket url
         """
-        v = Video()
-        data = v.video_info(vid)
-        mid = data.data["movie_id"]
+        mid = Video(vid).movie_id
         now = int(time.time())
-        ws = f"wss://chat.openrec.tv/socket.io/?movieId={mid}&connectAt={now}&isExcludeLiveViewers=false&EIO=3&transport=websocket"
+        ws = f"wss://chat.openrec.tv/socket.io/?movieId={mid}&connectAt={now}&referrer=https%3A%2F%2Fwww.openrec.tv%2Flive%2F{vid}&isExcludeLiveViewers=true&EIO=3&transport=websocket"
         return ws
 
     @staticmethod
-    def chat_parser(msg: str) -> ChatData:
+    def __parse_chat(msg: str) -> ChatData:
         """
         Parse chat data from websocket.
-
-        param
-        -----
-        msg: received websocket message
+        Args:
+            msg: received websocket message
+        Returns:
+            ChatData: parsed data
         """
-        ret_data = ChatData()
-
+        chat_type = None
+        chat_data = {}
         index = msg.find("[")
+
         if index == -1:
-            ret_data.type = "ping"
-            ret_data.data = msg
+            # ping
+            chat_type = 100
+            chat_data = msg
         elif index != 2:
-            ret_data.type = "system_msg"
-            ret_data.data = msg
+            # system message
+            chat_type = 101
+            chat_data = msg
         else:
             message = msg[index:].strip('"\n ')
             j = json.loads(message)
             if j[0] != "message":
-                ret_data.type = "unknown"
-                ret_data.data = message
+                chat_type = 102
+                chat_data = message
 
             else:
                 ws_data = json.loads(j[1])
-                t = ws_data["type"]
-                ret_data.data = ws_data["data"]
+                chat_type = ws_data["type"]
+                chat_data = ws_data["data"]
 
-                if t == 0:
-                    ret_data.type = "chat"
-                elif t == 1:
-                    ret_data.type = "live_viewers"
-                elif t == 3:
-                    ret_data.type = "stream_end"
-                elif t == 5:
-                    ret_data.type = "stream_start"
-                elif t == 6:
-                    ret_data.type = "ban"
-                elif t == 7:
-                    ret_data.type = "unban"
-                elif t == 8:
-                    ret_data.type = "add_staff"
-                elif t == 9:
-                    ret_data.type = "remove_staff"
-                elif t == 10:
-                    ret_data.type = "need_refresh"
-                elif t == 11:
-                    ret_data.type = "info"
-                elif t in [12, 13, 15]:
-                    ret_data.type = "telop"
-                elif t == 27:
-                    ret_data.type = "subscription"
-                elif t == 29:
-                    ret_data.type = "vote_start"
-                elif t == 30:
-                    ret_data.type = "vote_progress"
-                elif t == 31:
-                    ret_data.type = "vote_end"
-
-                else:
-                    ret_data.type = "unknown"
-
-        return ret_data
+        return ChatData(chat_type, chat_data)
 
     @staticmethod
-    def connect_chat(vid: str, on_open=None, on_message=None, on_error=None, on_close=None):
+    def connect_chat(
+        vid: str,
+        debug: Optional[bool] = False,
+        reconnect: Optional[bool] = False,
+        on_open: Callable[[], None] = None,
+        on_message: Callable[[ChatData], None] = None,
+        on_error: Callable[[Exception], None] = None,
+        on_close: Callable[[int, str], None] = None,
+    ):
         """
-        connect chat
-
-        param
-        -----
-        vid: video id
-        on_open: Run on connect to chat server.
-            function()
-        on_message: Run on message arrived.
-            function(msg: pyopenrec.chat.ChatData)
-        on_error: Run on error.
-            function(status, msg)
-        on_close: Run on close websocket.
-            function(err)
+        connect to chat server.
+        Args:
+            vid: video id
+            debug: enable debug mode
+            reconnect: reconnect when connection is closed except streaming is finished
+            on_open: callback function when connection is established
+            on_message: callback function when message is received
+            on_error: callback function when error occurs
+            on_close: callback function when connection is closed
         """
-        def _send_ping(ws: websocket.WebSocketApp):
-            while True:
-                time.sleep(25)
-                ws.send("2")
 
-        def _on_m(_, message):
-            if on_message:
-                msg = Chat.chat_parser(message)
-                on_message(msg)
+        global EXIT_FLAG
+        EXIT_FLAG = False
+
+        def _send_ping(ws):
+            ws.send("2")
+            global ping_thread
+            ping_thread = threading.Timer(interval=25, function=_send_ping, args=(ws,))
+            ping_thread.start()
 
         def _on_o(_):
             if on_open:
                 on_open()
 
-        def _on_c(_, status, msg):
-            if on_close:
-                on_close(status, msg)
+        def _on_m(ws, message: str):
+            if on_message:
+                msg = Chat.__parse_chat(message)
+                if msg.type_name == ChatType.stream_end.name:
+                    global EXIT_FLAG
+                    EXIT_FLAG = True
+                    ws.close()
+                elif msg.type_name == ChatType.chat.name:
+                    # if data is chat, parse data to Comment object
+                    msg.data = Comment(comment_from_ws=msg.data)
+                on_message(msg)
 
-        def _on_e(_, err):
+        def _on_e(_, err: Exception):
             if on_error:
                 on_error(err)
 
-        url = Chat.get_ws(vid)
-        websocket.enableTrace(False)
-        ws = websocket.WebSocketApp(url,
-                                    on_open=_on_o,
-                                    on_message=_on_m,
-                                    on_error=_on_e,
-                                    on_close=_on_c
-                                    )
+        def _on_c(_, status: int, msg: str):
+            if on_close:
+                if status != 1006:
+                    # if 1006, reconnect
+                    # if status is not 1006, close connection
+                    global EXIT_FLAG
+                    EXIT_FLAG = True
+                on_close(status, msg)
 
-        th = threading.Thread(target=_send_ping, args=(ws,))
-        th.start()
-        ws.run_forever()
+        url = Chat.__get_ws_url(vid)
+        websocket.enableTrace(debug)
+
+        while True:
+            ws = websocket.WebSocketApp(
+                url, on_open=_on_o, on_message=_on_m, on_error=_on_e, on_close=_on_c
+            )
+
+            global ping_thread
+            ping_thread = threading.Timer(interval=25, function=_send_ping, args=(ws,))
+            ping_thread.start()
+
+            ws.run_forever()
+            ping_thread.cancel()
+
+            # if stream_end or close status is not 1006, break
+            if EXIT_FLAG:
+                break
+
+            # if reconnect is False, break
+            if not reconnect:
+                break

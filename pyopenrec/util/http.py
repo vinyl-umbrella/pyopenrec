@@ -1,67 +1,128 @@
-from typing import Any
-
 import requests
+from typing import Optional, Union
 
-from .config import HEADERS
+from . import const
+from . import exceptions
+from ..etc import OpenrecCredentials
 
 
-class Response:
+def get(
+    url: str,
+    param: Optional[dict] = {},
+    credentials: Optional[OpenrecCredentials] = None,
+) -> Union[dict, list]:
     """
-    status: HTTP status
-    url: requested url
-    data: return value
+    Get request to url
+    Args:
+        url: url to get
+        param: parameters
+        credentials: login credentials
+    Returns:
+        dict: json response
     """
-    status: int
-    url: str
-    data: Any
-
-
-def request(method: str, url: str, params=None, credentials=None, proxy=None) -> Response:
-    """
-    param
-    -----
-    method: HTTP method
-    url: request URL
-    params: dict
-    credentials: dict
-        uuid, access-token
-    proxy: dict
-        http, https
-    """
-    header = HEADERS
+    headers = const.HEADERS
     if credentials:
-        header = {**header, **credentials}
-
-    if method.upper() == "GET":
-        res = requests.get(url, params=params, headers=header, proxies=proxy)
-    elif method.upper() == "POST":
-        res = requests.post(url, data=params, headers=header, proxies=proxy)
-    elif method.upper() == "PUT":
-        res = requests.put(url, data=params, headers=header, proxies=proxy)
-    elif method.upper() == "DELETE":
-        return requests.delete(url, headers=header, proxies=proxy)
-
-    if res.status_code != 200:
-        raise Exception(f"Failed to {method}, {url}\n\t{res.text}")
-
-    response = Response()
+        headers = {**const.HEADERS, **credentials.params}
+    res = requests.get(url, headers=headers, params=param)
     try:
-        response.status = res.status_code
-        response.url = res.url
         j = res.json()
+    except:
+        raise exceptions.PyopenrecException(
+            f"Invalid json response from {url}: {res.status_code}"
+        )
 
-        if "message" in j:
-            raise Exception(j["message"])
+    if res.ok:
+        return j
+    else:
+        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j['message']}")
 
-        if "data" in j and "items" in j["data"]:
-            items = j["data"]["items"]
-            if list(j["data"].keys()) == ['type', 'items'] and isinstance(items, list):
-                response.data = items
-            else:
-                response.data = j["data"]
-        else:
-            response.data = j
-        return response
 
-    except Exception as e:
-        raise e
+def post(
+    url: str,
+    data: Optional[dict] = {},
+    credentials: Optional[OpenrecCredentials] = None,
+) -> Union[dict, list]:
+    """
+    Post request to url
+    Args:
+        url: url to post
+        data: data to post
+        credentials: login credentials
+    Returns:
+        dict: json response
+    """
+    headers = const.HEADERS
+    if credentials:
+        headers = {**const.HEADERS, **credentials.params}
+    res = requests.post(url, headers=headers, data=data)
+    try:
+        j = res.json()
+    except:
+        raise exceptions.PyopenrecException(
+            f"Invalid json response from {url}: {res.status_code}"
+        )
+
+    if res.ok:
+        return j
+    else:
+        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j['message']}")
+
+
+def put(
+    url: str,
+    data: Optional[dict] = {},
+    credentials: Optional[OpenrecCredentials] = None,
+) -> Union[dict, list]:
+    """
+    Put request to url
+    Args:
+        url: url to put
+        data: data to put
+        credentials: login credentials
+    Returns:
+        dict: json response
+    """
+    headers = const.HEADERS
+    if credentials:
+        headers = {**const.HEADERS, **credentials.params}
+    res = requests.put(url, headers=headers, data=data)
+    try:
+        j = res.json()
+    except:
+        raise exceptions.PyopenrecException(
+            f"Invalid json response from {url}: {res.status_code}"
+        )
+
+    if res.ok:
+        return j
+    else:
+        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j['message']}")
+
+
+def delete(
+    url: str,
+    credentials: Optional[OpenrecCredentials] = None,
+) -> Union[dict, list]:
+    """
+    Delete request to url
+    Args:
+        url: url to delete
+        credentials: login credentials
+    Returns:
+        dict: json response
+    """
+    headers = const.HEADERS
+    if credentials:
+        headers = {**const.HEADERS, **credentials.params}
+    res = requests.delete(url, headers=headers)
+    try:
+        j = res.json()
+    except:
+        raise exceptions.PyopenrecException(
+            f"Invalid json response from {url}: {res.status_code}"
+        )
+
+    if res.ok:
+        return j
+    else:
+        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j['message']}")
