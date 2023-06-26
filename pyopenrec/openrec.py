@@ -88,12 +88,12 @@ class Openrec:
         self,
         user_id: str,
         user_data: Optional[dict] = None,
-    ):
+    ) -> User:
         """
-        Get user data.
+        Get user object.
         Args:
             user_id (str): user id
-            user_data (dict, optional): user data. If you already have user data, you can pass it to this function.
+            user_data (dict, optional): user data. If you already have user data, you can pass to fetch in this function.
         Returns:
             User: user object
         """
@@ -103,12 +103,12 @@ class Openrec:
         self,
         video_id: str,
         video_data: Optional[dict] = None,
-    ):
+    ) -> Video:
         """
-        Get video data.
+        Get video object.
         Args:
             video_id (str): video id
-            video_data (dict, optional): video data. If you already have video data, you can pass it to this function.
+            video_data (dict, optional): video data. If you already have video data, you can pass to fetch in this function.
         Returns:
             Video: video object
         """
