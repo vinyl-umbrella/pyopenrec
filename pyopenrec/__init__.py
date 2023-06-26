@@ -30,3 +30,4 @@ __version__ = "1.0.0"
 
 
 from .openrec import Openrec
+from .util.enums import *
