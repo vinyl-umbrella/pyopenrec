@@ -30,3 +30,25 @@ class VideoType(Enum):
     coming_up = 0
     live = 1
     vod = 2
+
+class ReactionType(Enum):
+    kawaii = "kawaii"
+    kakke = "kakke"
+    music = "music"
+    namida = "namida"
+    netabare = "netabare"
+    gg = "gg"
+    wakuwaku = "wakuwaku"
+    kansya = "kansya"
+    bikkuri = "bikkuri"
+    hatena = "hatena"
+    kusa = "kusa"
+    wara = "wara"
+    sugo = "sugo"
+    umai = "umai"
+    nice = "nice"
+    tsuyo = "tsuyo"
+    kami = "kami"
+    odoroki = "odoroki"
+    yaba = "yaba"
+    arara = "arara"
