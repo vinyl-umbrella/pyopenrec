@@ -2,6 +2,7 @@ import requests
 from typing import Optional
 
 from .etc import OpenrecCredentials
+from .capture import Capture
 from .chat import Chat
 from .user import User
 from .video import Video
@@ -74,6 +75,21 @@ class Openrec:
             credentials.random = r.cookies.get("random")
 
         return credentials
+
+    def Capture(
+        self,
+        capture_id: str,
+        capture_data: Optional[dict] = None,
+    ) -> Capture:
+        """
+        Get capture object.
+        Args:
+            capture_id (str): capture id
+            capture_data (dict, optional): capture data. If you already have capture data, you can skip fetch with this function.
+        Returns:
+            Capture: capture object
+        """
+        return Capture(capture_id, capture_data, self.credentials)
 
     @staticmethod
     def Chat():
