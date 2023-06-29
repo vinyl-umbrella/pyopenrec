@@ -18,7 +18,7 @@ class Capture:
     thumbnail_url: str = None
     capture_channel: User = None
     video: Video = None
-    reactions: list[dict] = None
+    reactions: list[dict] = []
 
     def __init__(
         self,
@@ -52,6 +52,11 @@ class Capture:
             user_data=data.get("capture_channel"),
         )
         self.video = Video(data["movie"].get("id"), video_data=data.get("movie"))
+
+        for r in data["reaction_stats_list"]:
+            self.reactions.append(
+                {"type": enums.ReactionType(r["id"]), "count": r["count"]}
+            )
 
     def get_comments(self) -> list[Comment]:
         """
