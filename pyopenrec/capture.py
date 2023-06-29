@@ -77,7 +77,7 @@ class Capture:
             dict: posted comment info
         """
         if not self.credentials:
-            raise exceptions.LoginRequiredException()
+            raise exceptions.AuthException()
 
         url = f"{const.AUTHORIZED_API}/captures/{self.id}/comments"
         params = {"message": message, "consented_comment_terms": True}
