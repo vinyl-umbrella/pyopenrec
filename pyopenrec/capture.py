@@ -1,9 +1,10 @@
 from typing import Optional
 
-from .util import const, enums, http
+from .util import const, exceptions, enums, http
 from .openrec import OpenrecCredentials
-from .video import Video
+from .comment import Comment
 from .user import User
+from .video import Video
 
 
 class Capture:
@@ -52,8 +53,32 @@ class Capture:
         )
         self.video = Video(data["movie"].get("id"), video_data=data.get("movie"))
 
-    def get_comments():
-        pass
+    def get_comments(self) -> list[Comment]:
+        """
+        Get comments for capture.
 
-    def post_comment():
-        pass
+        Returns:
+            list[Comment]: list of Comment
+        """
+        url = f"{const.EXTERNAL_API}/captures/{self.id}/comments"
+        comments = []
+        for comment in http.get(url):
+            comments.append(Comment(comment_from_rest=comment))
+        return comments
+
+    def post_comment(self, message: str) -> dict:
+        """
+        Post comment to capture.
+
+        Args:
+            message (str): message you want to post
+
+        Returns:
+            dict: posted comment info
+        """
+        if not self.credentials:
+            raise exceptions.LoginRequiredException()
+
+        url = f"{const.AUTHORIZED_API}/captures/{self.id}/comments"
+        params = {"message": message, "consented_comment_terms": True}
+        return http.post(url, params, self.credentials)
