@@ -182,3 +182,14 @@ class User:
         }
         return http.get(url, params)
 
+    def board_items(self) -> list[dict]:
+        """
+        Get board items of a specific user.
+
+        Returns:
+            dict: board info
+        """
+        url = f"{const.EXTERNAL_API}/ext-board/users/{self.id}/board-items"
+        params = {"board_type": "custom-board", "page": 1}
+
+        return http.get(url, params)
