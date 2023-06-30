@@ -85,3 +85,20 @@ class Capture:
         url = f"{const.AUTHORIZED_API}/captures/{self.id}/comments"
         params = {"message": message, "consented_comment_terms": True}
         return http.post(url, params, self.credentials)
+
+    def post_reaction(self, reaction_type: enums.ReactionType) -> dict:
+        """
+        Post reaction to capture.
+
+        Args:
+            reaction_type (ReactionType): reaction type
+        Returns:
+            dict: reaction info
+        """
+        url = "https://apiv5.openrec.tv/everyone/api/v5/reactions"
+        data = {
+            "target_id": self.id,
+            "target_type": "capture",
+            "reaction_id": reaction_type.name,
+        }
+        return http.post(url, data, self.credentials)
