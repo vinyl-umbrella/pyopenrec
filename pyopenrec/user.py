@@ -1,10 +1,13 @@
 from typing import Optional
 
+from .openrec import OpenrecCredentials
 from .util import const, http
 from .util.enums import VideoType
 
 
 class User:
+    credentials: OpenrecCredentials = None
+
     id: str = ""
     nickname: str = None
     introduciton: str = None
@@ -24,8 +27,14 @@ class User:
     twitter_id: str = None
     # streaming: dict = None
 
-    def __init__(self, id: str, user_data: Optional[dict] = None):
+    def __init__(
+        self,
+        id: str,
+        user_data: Optional[dict] = None,
+        credentials: Optional[OpenrecCredentials] = None,
+    ):
         self.id = id
+        self.credentials = credentials
         self.__set_user_info(user_data)
 
     def __set_user_info(self, user_data: Optional[dict] = None):
