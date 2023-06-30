@@ -20,6 +20,7 @@ class ChatType(Enum):
     vote_start = 29
     vote_progress = 30
     vote_end = 31
+    extention = 43
     # ---
     ping = 100
     system_msg = 101
