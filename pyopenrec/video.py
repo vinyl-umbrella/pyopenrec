@@ -3,7 +3,7 @@ from typing import Optional
 
 from .user import User
 from .comment import Comment
-from .openrec import OpenrecCredentials
+from .etc import OpenrecCredentials
 from .util import const, exceptions, http
 from .util.enums import VideoType
 
@@ -177,7 +177,7 @@ class Video:
             comments.append(Comment(comment_from_rest=comment))
         return comments
 
-    def post_comment(self, message: str = ""):
+    def post_comment(self, message: str) -> dict:
         if not self.credentials.is_login:
             raise exceptions.AuthException("You need to login.")
 
@@ -189,14 +189,67 @@ class Video:
             "to_user_id": "",
             "consented_chat_terms": "false",
         }
-        return http.post(
-            url,
-            params,
-            self.credentials,
-        )
+        return http.post(url, params, self.credentials)
 
-    def post_template_comment(self, template_id: str):
-        pass
+    # def post_template_comment(self, comment_id: int) -> dict:
+    #     """
+    #     Post a template comment to live stream.
 
-    def post_vod_comment(self):
-        pass
+    #     Args:
+    #         comment_id (int, optional): comment id.
+    #         0: こんにちは！, 1: こんばんは！, 2: わこつ, 3: 神, 4: ナイス, 5: お疲れ様です！, 6: うまい, 7: おはようございます, 8: 初見です, 9: きたよ, 10: gg, 11: ドンマイ, 12: いいね, 13: おめでとう！, 14: おやすみ
+    #     """
+    #     url = f"https://apiv5.openrec.tv/everyone/api/v5/movies/{self.id}/chats"
+    #     template_comments = [
+    #         "19jlkj1knm7",
+    #         "lj0gzn767dm",
+    #         "gje0zy1z7w2",
+    #         "5n39zmgz41g",
+    #         "qryvzroz057",
+    #         "8jw9z3mkrd1",
+    #         "x9rozpqkm3q",
+    #         "j9pmkq1zw27",
+    #         "glew6d8zdmn",
+    #         "enq56l1zpl4",
+    #         "o04vz0w6d1m",
+    #         "1yw4k90knqx",
+    #         "g9evzxykxd4",
+    #         "48w2zenzdvj",
+    #         "q0jl6oekm97",
+    #     ]
+    #     params = {
+    #         "fixed_phrase_id": template_comments[comment_id],
+    #         "messaged_at": "",
+    #         "quality_type": 2,
+    #     }
+    #     return http.post(url, params, self.credentials)
+
+    def post_vod_comment(self, message: str) -> dict:
+        """
+        Post a comment to vod.
+
+        Args:
+            message (str): message which you want to post
+        Returns:
+            http.Response: response
+        """
+        if not self.credentials.is_login:
+            raise exceptions.AuthException("You need to login.")
+        url = f"{const.AUTHORIZED_API}/movies/{self.id}/comments"
+        params = {"message": message}
+        return http.post(url, params, self.credentials)
+
+    def post_vote(self, vote_id: str, index: int) -> dict:
+        """
+        Post a vote to live stream.
+
+        Args:
+            vote_id (str): vote id
+            index (int): index of vote
+        Returns:
+           vote result
+        """
+
+        url = f"https://apiv5.openrec.tv/everyone/api/v5/movies/{self.id}/votes/{vote_id}/votes"
+        params = {"vote_index": index}
+        return http.post(url, params, self.credentials)
