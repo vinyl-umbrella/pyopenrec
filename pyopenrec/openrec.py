@@ -6,7 +6,7 @@ from .capture import Capture
 from .chat import Chat
 from .user import User
 from .video import Video
-from .util import const, exceptions
+from .util import const, exceptions, http
 
 # from .comment import Comment
 
@@ -129,3 +129,42 @@ class Openrec:
             Video: video object
         """
         return Video(video_id, video_data, self.credentials)
+
+    def me(self) -> dict:
+        """
+        Get logined user info.
+
+        Returns:
+            dict: user info
+        """
+        if self.credentials is None:
+            raise exceptions.AuthException()
+
+        url = f"{const.AUTHORIZED_API}/users/me"
+        res = http.get(url, credentials=self.credentials)
+
+        if res.get("status", None) == 0:
+            return res["data"]["items"][0]
+        else:
+            raise exceptions.PyopenrecException(f"Error : {res.get('message')}")
+
+    def have_ng_word(self, message: str) -> bool:
+        """
+        Check if the message has banned word.
+
+        Args:
+            message (str): message
+        Returns:
+            bool: if the message has banned word, return True. otherwise, return False.
+        """
+        if self.credentials is None:
+            raise exceptions.AuthException()
+
+        url = "https://www.openrec.tv/api/v3/user/check_banned_word"
+        params = {"nickname": message}
+        res = http.get(url, params, self.credentials)
+
+        if res.get("status", None) == 0:
+            return bool(res["data"]["has_banned_word"])
+        else:
+            raise exceptions.PyopenrecException(f"Error : {res.get('message')}")
