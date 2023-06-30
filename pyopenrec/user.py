@@ -134,3 +134,51 @@ class User:
             "page": page,
         }
         return http.get(url, params)
+
+    def captures(
+        self,
+        sort_direction: Optional[str] = "DESC",
+        page: int = 1,
+    ) -> list[dict]:
+        """
+        Get captures list of a specific user.
+
+        Args:
+            user_id: user id
+            sort_direction: "ASC" or "DESC"
+            page: page number
+        Returns:
+            list: list of captures # TODO: return Capture object
+        """
+        url = f"{const.EXTERNAL_API}/captures"
+        params = {
+            "channel_ids": self.id,
+            "sort": "public_at",
+            "sort_direction": sort_direction,
+            "page": page,
+        }
+
+        return http.get(url, params)
+
+    def capture_rank(
+        self, preriod: Optional[str] = "weekly", page: Optional[int] = 1
+    ) -> list[dict]:
+        """
+        Get capture rank of a specific user.
+
+        Args:
+            user_id: user id
+            preriod: "daily" or "weekly" or "monthly"
+            page: page number
+        Returns:
+            list: list of captures # TODO: return Capture object
+        """
+
+        url = f"{const.EXTERNAL_API}/capture-ranks"
+        params = {
+            "channel_ids": self.id,
+            "period": preriod,
+            "page": page,
+        }
+        return http.get(url, params)
+
