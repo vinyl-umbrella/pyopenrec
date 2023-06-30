@@ -124,7 +124,7 @@ class User:
             sort: "total_views" or "created_at" or "-created_at" or "schedule_at" or "total_yells" or "-total_yells" or "popularity" or "published_at" or "-published_at"
             page: page number
         Returns:
-            list: list of contents
+            list: list of contents # TODO: return Video object
         """
         url = f"{const.EXTERNAL_API}/movies"
         params = {
