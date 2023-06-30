@@ -1,9 +1,9 @@
 from typing import Optional
 
-from .util import const, exceptions, enums, http
-from .openrec import OpenrecCredentials
 from .comment import Comment
+from .etc import OpenrecCredentials
 from .user import User
+from .util import const, exceptions, enums, http
 from .video import Video
 
 

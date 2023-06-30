@@ -1,6 +1,6 @@
 from typing import Optional
 
-from .openrec import OpenrecCredentials
+from .etc import OpenrecCredentials
 from .util import const, http
 from .util.enums import VideoType
 
@@ -181,6 +181,28 @@ class User:
             "page": page,
         }
         return http.get(url, params)
+
+    def yell_rank(self, month: Optional[str], page: int = 1) -> list[dict]:
+        """
+        Get yell rank of a specific user.
+
+        Args:
+            month: yyyyMM. if month is empty, return all yell rank.
+        Returns:
+            list: list of yell rank
+        """
+        url = f"{const.EXTERNAL_API}/yell-ranks"
+        params = {
+            "user_id": self.id,
+            "month": month,
+            "page": page,
+        }
+        l = []
+        for rank in http.get(url, params):
+            rank["user"] = User(rank["user"]["id"], rank["user"])
+            rank["to_user"] = User(rank["to_user"]["id"], rank["to_user"])
+            l.append(rank)
+        return l
 
     def board_items(self) -> list[dict]:
         """
