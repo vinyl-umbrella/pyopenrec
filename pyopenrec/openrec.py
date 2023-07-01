@@ -5,8 +5,8 @@ from .etc import OpenrecCredentials
 from .capture import Capture
 from .chat import Chat
 from .user import User
+from .util import const, exceptions, http, enums
 from .video import Video
-from .util import const, exceptions, http
 
 # from .comment import Comment
 
@@ -130,12 +130,12 @@ class Openrec:
         """
         return Video(video_id, video_data, self.credentials)
 
-    def me(self) -> dict:
+    def me(self) -> User:
         """
         Get logined user info.
 
         Returns:
-            dict: user info
+            User: user object of login user
         """
         if self.credentials is None:
             raise exceptions.AuthException()
@@ -144,7 +144,8 @@ class Openrec:
         res = http.get(url, credentials=self.credentials)
 
         if res.get("status", None) == 0:
-            return res["data"]["items"][0]
+            # return res["data"]["items"][0]
+            return self.User(res["data"]["items"][0]["id"], res["data"]["items"][0])
         else:
             raise exceptions.PyopenrecException(f"Error : {res.get('message')}")
 
@@ -168,3 +169,45 @@ class Openrec:
             return bool(res["data"]["has_banned_word"])
         else:
             raise exceptions.PyopenrecException(f"Error : {res.get('message')}")
+
+    def timeline(
+        self, type: enums.VideoType = enums.VideoType.coming_up
+    ) -> list[Video]:
+        """
+        Get timeline videos.
+
+        Args:
+            type (VideoType, optional): video type. Defaults to `coming_up`.
+        Returns:
+            list[Video]: list of Video
+        """
+        if not self.credentials.is_login:
+            raise exceptions.AuthException()
+
+        if type == enums.VideoType.coming_up:
+            # get coming up videos
+            url = f"{const.AUTHORIZED_API}/users/me/timeline-movies/comingups"
+            params = {"limit": 40}
+
+            res = http.get(url, params, self.credentials)
+
+            if res.get("status", None) == 0:
+                return [self.Video(v["id"], v) for v in res["data"]["items"]]
+            else:
+                raise exceptions.PyopenrecException(f"Error : {res.get('message')}")
+
+        elif type in [enums.VideoType.live, enums.VideoType.vod]:
+            # get live or vod videos
+            url = f"{const.AUTHORIZED_API}/users/me/timelines/movies"
+            params = {"onair_status": type.value, "limit": 40}
+            res = http.get(url, params, self.credentials)
+
+            if res.get("status", None) == 0:
+                return [
+                    self.Video(v["id"], v) for v in res["data"]["items"][0]["movies"]
+                ]
+            else:
+                raise exceptions.PyopenrecException(f"Error : {res.get('message')}")
+
+        else:
+            raise exceptions.PyopenrecException("Invalid type.")
