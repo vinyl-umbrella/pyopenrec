@@ -9,16 +9,12 @@ pip install git+https://github.com/vinyl-umbrella/pyopenrec
 ## Usage
 ### Basic
 ```py
-from datetime import datetime
-import json
-import pyopenrec
+from pyopenrec import Openrec
 
-openrec = pyopenrec.Openrec()
-dt = datetime(2021, 12, 21, 0, 0, 0)
-j = openrec.get_comment("n9ze3m2w184", dt, 5)
 
-with open("sample.json", "w") as f:
-    json.dump(j, f, indent=2, ensure_ascii=False)
+openrec = Openrec("YOUR_EMAIL", "YOUR_PASSWORD")
+user = openrec.me()
+print(user.id)
 ```
 
 <!-- python3 setup.py sdist; pip install dist/pyopenrec-0.0.5.tar.gz -->
@@ -34,7 +30,7 @@ pipenv install --dev
 # Spawns a shell within the virtualenv
 pipenv shell
 # If you add some packages, add it to the requirements.txt
-pipenv lock -r > requirements.txt
+pip freeze > requirements.txt
 # install pyopenrec to virtual environment
 pipenv install -e .
 # lint & test
