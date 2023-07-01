@@ -1,27 +1,31 @@
 import time
 from datetime import datetime
 
-from pyopenrec.comment import Comment
+import pyopenrec
 
 
 last_id = 0
 dt = datetime(2020, 1, 1, 0, 0, 0)
 vid = input("input video id: ")
-c = Comment()
+video = pyopenrec.Openrec().Video(vid)
 
 while True:
-    comments = c.get_comment(vid, dt, 100)
+    comments = video.get_comments(dt, 100)
     # if got all comments, exit
-    if comments.data[-1]["id"] == last_id:
+    if comments[-1].id == last_id:
         break
 
-    for comment in comments.data:
-        if comment["id"] <= last_id:
+    for comment in comments:
+        if comment.id <= last_id:
             continue
-        print(comment["posted_at"], comment["user"]["nickname"],
-              comment["user"]["id"], comment["message"])
+        print(
+            comment.posted_at,
+            comment.user.nickname,
+            comment.user.id,
+            comment.message,
+        )
 
-    last_id = comments.data[-1]["id"]
-    dt = datetime.fromisoformat(comments.data[-1]["posted_at"])
+    last_id = comments[-1].id
+    dt = datetime.fromisoformat(comments[-1].posted_at)
 
     time.sleep(1)
