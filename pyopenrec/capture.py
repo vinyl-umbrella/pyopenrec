@@ -1,84 +1,114 @@
-from .util import http
-from .util.config import EXTERNAL_API
+from typing import Optional
+
+from .comment import Comment
+from .credentials import OpenrecCredentials
+from .user import User
+from .util import const, exceptions, enums, http
+from .video import Video
 
 
 class Capture:
     """
-    - Get popular capture.
-    - Get capture list.
-    - Get capture info. (title, parent_stream, views, creater, reactions and etc.)
-    - Post capture reaction. Login Required.
+    Capture class.
+
+    - `get_comments()`: get comments for capture
+    - `post_comment(message)`: post comment to capture
+    - `post_reaction(reaction_type)`: post reaction to capture
     """
-    _credentials = None
-    _proxy = {}
 
-    def popular_capture(self, period="daily", is_channel_unique=True, page=1) -> http.Response:
+    credentials: OpenrecCredentials = None
+    id: str = None
+    title: str = None
+    is_ban: bool = None
+    is_hidden: bool = None
+    total_views: int = None
+    url: str = None
+    thumbnail_url: str = None
+    capture_channel: User = None
+    video: Video = None
+    reactions: dict[enums.ReactionType, int] = {}
+
+    def __init__(
+        self,
+        id: str,
+        capture_data: Optional[dict] = None,
+        credentials: Optional[OpenrecCredentials] = None,
+    ):
+        self.id = id
+        self.credentials = credentials
+        self.__set_capture_info(capture_data)
+
+    def __set_capture_info(self, capture_data: Optional[dict] = None):
+        data = capture_data
+        if capture_data is None:
+            url = f"{const.EXTERNAL_API}/captures/{self.id}"
+            data = http.get(url)
+
+        self.id = data["capture"].get("id", None)
+        self.title = data["capture"].get("title", None)
+        self.is_ban = data["capture"].get("is_ban", None)
+        self.is_hidden = data["capture"].get("is_hidden", None)
+        self.total_views = data["capture"].get("total_views", None)
+        self.url = (
+            "https://public.openrec.tv" + data["capture"].get("url", None)
+            if data["capture"].get("url", None)
+            else None
+        )
+        self.thumbnail_url = data.get("thumbnail_url", None)
+        self.capture_channel = User(
+            data["capture_channel"].get("id"),
+            user_data=data.get("capture_channel"),
+            credentials=self.credentials,
+        )
+        self.video = Video(
+            data["movie"].get("id"),
+            video_data=data.get("movie"),
+            credentials=self.credentials,
+        )
+
+        for r in data["reaction_stats_list"]:
+            self.reactions[enums.ReactionType(r["id"]).name] = r["count"]
+
+    def get_comments(self) -> list[Comment]:
         """
-        Get popular capture.
+        Get comments for capture.
 
-        param
-        -----
-        period: "daily" | "weekly" | "monthly"
-        is_channel_unique: Allow duplicate channels or not
-        page: page number
+        Returns:
+            list[Comment]: list of Comment
         """
-        url = f"{EXTERNAL_API}/capture-ranks"
-        params = {
-            "period": period,
-            "is_channel_unique": is_channel_unique,
-            "page": page
-        }
-        return http.request("GET", url, params, proxy=self._proxy)
+        url = f"{const.EXTERNAL_API}/captures/{self.id}/comments"
+        return [Comment(comment_from_rest=comment) for comment in http.get(url)]
 
-    def capture_list(self, channel=None, vid=None, sort="views", sort_direction="DESC", page=1) -> http.Response:
+    def post_comment(self, message: str) -> dict:
         """
-        Get capture list.
+        Post comment to capture.
 
-        param
-        -----
-        channel_id: streamer channel id
-        vid: video id
-        sort: "views" | "public_at" | "reaction"
-        sort_direction: "ASC" | "DESC"
-        page: page number
+        Args:
+            message (str): message you want to post
+
+        Returns:
+            dict: posted comment info
         """
-        url = f"{EXTERNAL_API}/captures"
-        params = {
-            "channel_id": channel,
-            "movie_id": vid,
-            "sort": sort,
-            "sort_direction": sort_direction,
-            "page": page
-        }
-        return http.request("GET", url, params, proxy=self._proxy)
+        if not self.credentials:
+            raise exceptions.AuthException("You need to login.")
 
-    def capture_info(self, cap_id: str) -> http.Response:
+        url = f"{const.AUTHORIZED_API}/captures/{self.id}/comments"
+        params = {"message": message, "consented_comment_terms": True}
+        return http.post(url, params, self.credentials)
+
+    def post_reaction(self, reaction_type: enums.ReactionType) -> dict:
         """
-        Get capture info. (title, parent_stream, views, creater, reactions and etc.)
+        Post reaction to capture.
 
-        param
-        -----
-        cap_id: capture id
+        Args:
+            reaction_type (ReactionType): reaction type
+        Returns:
+            dict: reaction info
         """
-        url = f"{EXTERNAL_API}/captures/{cap_id}"
-        return http.request("GET", url, proxy=self._proxy)
-
-    def post_capture_reaction(self, cap_id: str, reaction: str) -> http.Response:
-        """
-        Post capture reaction. Login Required.
-
-        param
-        -----
-        cap_id: capture id
-        reaction: "arara" | "bikkuri" | "gg" | "hatena" | "kakke" | "kami" | "kansya" | "kawaii" | "kusa" | "music" | "nice" | "odoroki" | "sugo" | "tsuyo" | "umai" | "wakuwaku" | "wara" | "yaba"
-        """
-        if self._credentials is None:
-            raise Exception("Login Required.")
-
         url = "https://apiv5.openrec.tv/everyone/api/v5/reactions"
-        params = {
-            "target_id": cap_id,
+        data = {
+            "target_id": self.id,
             "target_type": "capture",
-            "reaction_id": reaction
+            "reaction_id": reaction_type.name,
         }
-        return http.request("POST", url, params, self._credentials, self._proxy)
+        return http.post(url, data, self.credentials)

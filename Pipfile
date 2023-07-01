@@ -4,19 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-requests = ">=2.26"
-websocket-client = ">=1.2.3"
+requests = ">=2.30"
+websocket-client = ">=1.6.0"
 pyopenrec = {editable = true, path = "."}
 
 [dev-packages]
-autopep8 = "*"
-flake8 = "*"
-flake8-import-order = "*"
-pysocks = ">=1.7.1"
+black = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.10"
 
 [scripts]
 test = "python3 tests/main.py"
-lint = "flake8 pyopenrec"
+lint = "black pyopenrec"
+
