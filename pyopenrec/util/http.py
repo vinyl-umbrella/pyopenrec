@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 from . import const
 from . import exceptions
-from ..etc import OpenrecCredentials
+from ..credentials import OpenrecCredentials
 
 
 def get(

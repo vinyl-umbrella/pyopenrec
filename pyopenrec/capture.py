@@ -15,6 +15,7 @@ class Capture:
     - `post_comment(message)`: post comment to capture
     - `post_reaction(reaction_type)`: post reaction to capture
     """
+
     credentials: OpenrecCredentials = None
     id: str = None
     title: str = None
