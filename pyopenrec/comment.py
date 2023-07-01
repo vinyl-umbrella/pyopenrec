@@ -11,6 +11,7 @@ class Comment:
     id: int = None
     message: str = None
     posted_at: str = None  # e.g. "2021-08-01T12:00:00.000Z"
+    is_muted: bool = None
     user: User = None
     stamp: dict = None
     capture: dict = None
@@ -34,6 +35,7 @@ class Comment:
             self.posted_at = comment_from_rest.get(
                 "posted_at", None
             ) or comment_from_rest.get("created_at", None)
+            self.is_muted = comment_from_rest.get("is_muted", None)
 
             self.stamp = comment_from_rest.get("stamp", None)
             self.capture = comment_from_rest.get("capture", None)
@@ -47,6 +49,7 @@ class Comment:
             self.id = comment_from_ws.get("chat_id", None)
             self.message = comment_from_ws.get("message", None)
             self.posted_at = comment_from_ws.get("message_dt", None)
+            self.is_muted = bool(comment_from_ws.get("is_muted", None))
             self.stamp = comment_from_ws.get("stamp", None)
             self.capture = comment_from_ws.get("capture", None)
 

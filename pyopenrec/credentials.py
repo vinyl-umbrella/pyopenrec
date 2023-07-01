@@ -37,3 +37,16 @@ class OpenrecCredentials:
         Return credentials as json string.
         """
         return json.dumps(self.params)
+
+    def load(self, json_str: str) -> None:
+        """
+        Load credentials from json string.
+
+        Args:
+            json_str (str): saved credentials as json string
+        """
+        params = json.loads(json_str)
+        self.access_token = params["access_token"]
+        self.uuid = params["uuid"]
+        self.token = params["token"]
+        self.random = params["random"]

@@ -4,11 +4,10 @@ from typing import Optional
 from .capture import Capture
 from .chat import Chat
 from .credentials import OpenrecCredentials
+from .info import Info
 from .user import User
 from .util import const, exceptions, http, enums
 from .video import Video
-
-# from .comment import Comment
 
 
 class Openrec:
@@ -26,7 +25,12 @@ class Openrec:
 
     credentials: OpenrecCredentials = None
 
-    def __init__(self, email: Optional[str] = None, password: Optional[str] = None):
+    def __init__(
+        self,
+        email: Optional[str] = None,
+        password: Optional[str] = None,
+        credentials: Optional[OpenrecCredentials] = None,
+    ):
         """
         if email and password is provided, login to openrec.tv. Otherwise, you can use other functions without login.
 
@@ -34,6 +38,9 @@ class Openrec:
             email (str): email address
             password (str): password
         """
+        if credentials:
+            self.credentials = credentials
+
         if email and password:
             self.credentials = self.__login(email, password)
 
@@ -119,6 +126,15 @@ class Openrec:
         """
         return Capture(capture_id, capture_data, self.credentials)
 
+    def Info(self) -> Info:
+        """
+        Get info object.
+
+        Returns:
+            Info: info object
+        """
+        return Info()
+
     def User(
         self,
         user_id: str,
@@ -168,9 +184,7 @@ class Openrec:
 
         if res.get("status", None) == 0:
             # return res["data"]["items"][0]
-            return self.User(
-                res["data"]["items"][0]["id"], res["data"]["items"][0], self.credentials
-            )
+            return self.User(res["data"]["items"][0]["id"], res["data"]["items"][0])
         else:
             raise exceptions.PyopenrecException(f"Error : {res.get('message')}")
 
