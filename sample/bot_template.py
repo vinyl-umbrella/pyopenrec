@@ -1,99 +1,122 @@
-import json
 from os import path
 
-import pyopenrec
+from pyopenrec import ChatType, Openrec
 from pyopenrec.chat import ChatData
+from pyopenrec import credentials
 
-
-VID = input("Video id: ")
-credentials = "./secret.json"
-if path.isfile(credentials):
-    with open("./secret.json", "r") as f:
-        cred = json.load(f)
-    OPENREC = pyopenrec.Openrec(credentials=cred)
-else:
-    OPENREC = pyopenrec.Openrec(email="YOUR_EMAIL", password="YOUR_PASSWORD")
-    with open(credentials, "w") as f:
-        json.dump(OPENREC._credentials, f, ensure_ascii=False, indent=4)
-
-
-def on_m(msg: ChatData):
-    if msg.type == "chat" and msg.data["user_key"] != OPENREC.id:
-        # mute検知
-        if msg.data["is_muted"]:
-            pass
-
-        # chat command
-        if msg.data["message"].startswith("@bot "):
-            command = msg.data["message"].split(" ")
-            if command[1] == "bot_command":
-                OPENREC.post_comment(VID, "bot response")
-                pass
-
-    # 同時接続数
-    elif msg.type == "live_viewers":
-        pass
-
-    # 配信開始
-    elif msg.type == "stream_start":
-        pass
-
-    # 配信終了
-    elif msg.type == "stream_end":
-        pass
-
-    # ban
-    elif msg.type == "ban":
-        pass
-
-    # ban解除
-    elif msg.type == "unban":
-        pass
-
-    # staff追加
-    elif msg.type == "add_staff":
-        pass
-
-    # staff削除
-    elif msg.type == "remove_staff":
-        pass
-
-    # タイトル変更など
-    elif msg.type == "info":
-        pass
-
-    # テロップ更新
-    elif msg.type == "telop":
-        pass
-
-    # サブスク入会
-    elif msg.type == "subscription":
-        pass
-
-    # アンケート開始
-    elif msg.type == "vote_start":
-        pass
-
-    # アンケート途中結果
-    elif msg.type == "vote_progress":
-        pass
-
-    # アンケート終了、結果
-    elif msg.type == "vote_end":
-        pass
-
-
-def on_e(err):
-    print("[err]", err)
-
-
-def on_c(status, msg):
-    print("[close]", status, msg)
+VID = input("Video ID: ")
+CLIENT = None
+COMMAND_PREFIX = "@bot"
 
 
 def on_o():
     pass
 
 
+def on_m(msg: ChatData):
+    if msg.type_name == ChatType.chat.name and msg.data.user.id != CLIENT.me().id:
+        # mute検知
+        if msg.data.is_muted:
+            return
+
+        # chat
+        if msg.data.message.startswith(COMMAND_PREFIX):
+            command = msg.data.message[len(COMMAND_PREFIX) + 1 :]
+            if command == "BOT_COMMAND":
+                CLIENT.Video(VID).post_comment("bot response")
+                return
+
+    # 同時接続数
+    if msg.type_name == ChatType.live_viewers:
+        return
+
+    # 配信開始
+    if msg.type_name == ChatType.stream_start:
+        return
+
+    # 配信終了
+    if msg.type_name == ChatType.stream_end:
+        return
+
+    # ban
+    if msg.type_name == ChatType.ban:
+        return
+
+    # ban解除
+    if msg.type_name == ChatType.unban:
+        return
+
+    # staff追加
+    if msg.type_name == ChatType.staff_add:
+        return
+
+    # staff削除
+    if msg.type_name == ChatType.remove_staff:
+        return
+
+    # タイトル変更など
+    if msg.type_name == ChatType.info:
+        return
+
+    # テロップ
+    if msg.type_name == ChatType.telop:
+        return
+
+    # サブスク入会
+    if msg.type_name == ChatType.subscription:
+        return
+
+    # アンケ開始
+    if msg.type_name == ChatType.vote_start:
+        return
+
+    # アンケ途中結果
+    if msg.type_name == ChatType.vote_progress:
+        return
+
+    # アンケ終了
+    if msg.type_name == ChatType.vote_end:
+        return
+
+    # 拡張機能
+    if msg.type_name == ChatType.extention:
+        return
+
+    # 未解析のデータ
+    if msg.type_name == ChatType.unknown:
+        return
+
+
+def on_e(e):
+    print("error", e)
+
+
+def on_c(status, reason):
+    print("close", status, reason)
+
+
 if __name__ == "__main__":
-    OPENREC.connect_chat(VID, on_open=on_o, on_message=on_m, on_error=on_e, on_close=on_c)
+    secret = "./secret.json"
+
+    if path.isfile(secret):
+        with open(secret, "r") as f:
+            cred = credentials.OpenrecCredentials()
+            cred.load(f.read())
+
+        CLIENT = Openrec(credentials=cred)
+        print(CLIENT.me().id)
+
+    else:
+        CLIENT = Openrec(email="YOUR_EMAIL", password="YOUR_PASSWORD")
+        with open(secret, "w") as f:
+            f.write(str(CLIENT.credentials))
+
+    CLIENT.Chat().connect_chat(
+        VID,
+        debug=False,
+        reconnect=True,
+        on_open=on_o,
+        on_message=on_m,
+        on_close=on_c,
+        on_error=on_e,
+    )
