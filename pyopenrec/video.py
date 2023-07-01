@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Optional
 
-from .user import User
 from .comment import Comment
-from .etc import OpenrecCredentials
+from .credentials import OpenrecCredentials
+from .user import User
 from .util import const, exceptions, http
 from .util.enums import VideoType
 
@@ -50,7 +50,7 @@ class Video:
         then set video info to self.
 
         Args:
-            video_data (dict, optional): video info as dict
+            video_data (dict): video info as dict
         """
         data = video_data
         if video_data is None:
@@ -72,7 +72,9 @@ class Video:
         self.published_at = data.get("published_at", None)
         self.started_at = data.get("started_at", None)
         self.tags = data.get("tags", None)
-        self.user = User(data["channel"]["id"], data.get("channel", None))
+        self.user = User(
+            data["channel"]["id"], data.get("channel", None), self.credentials
+        )
 
         # live
         if self.on_air_status == VideoType.live:
@@ -91,10 +93,13 @@ class Video:
 
     def yell_rank(self, page: int = 1) -> list[dict]:
         """
+        get yell rank of live stream.
+
         Args:
             page (int, optional): page number.
+
         Returns:
-            dict: yell rank info
+            list[dict]: yell rank info
         """
         url = f"{const.EXTERNAL_API}/yell-ranks"
         params = {"movie_id": self.id, "page": page}
@@ -103,10 +108,13 @@ class Video:
 
     def yell_history(self, page: int = 1) -> list[dict]:
         """
+        get yell history of live stream.
+
         Args:
             page (int, optional): page number.
+
         Returns:
-            dict: yell history info
+            list[dict]: yell history info
         """
         url = f"{const.EXTERNAL_API}/yell-logs"
         params = {"movie_id": self.id, "page": page}
@@ -124,6 +132,7 @@ class Video:
         Args:
             from_created_at (datetime, optional): datetime object.
             limit (int, optional): number of comments. max 300
+
         Returns:
             list[Comment]: list of Comment object
         """
@@ -135,17 +144,15 @@ class Video:
             "limit": limit,
         }
 
-        comments = []
-        for comment in http.get(url, params):
-            comments.append(Comment(comment))
-        return comments
+        return [Comment(comment_from_rest=comment) for comment in http.get(url, params)]
 
     def get_recent_comments(self, limit: int = 100) -> list["Comment"]:
         """
         Get recent comments of live stream.
 
         Args:
-            limit (int, optional): number of comments. max 300
+            limit (int): number of comments. max 300
+
         Returns:
             list[Comment]: list of Comment object
         """
@@ -158,10 +165,7 @@ class Video:
             "limit": limit,
         }
 
-        comments = []
-        for comment in http.get(url, params):
-            comments.append(Comment(comment))
-        return comments
+        return [Comment(comment_from_rest=comment) for comment in http.get(url, params)]
 
     def get_vod_comments(self) -> list["Comment"]:
         """
@@ -172,12 +176,18 @@ class Video:
         """
         url = f"{const.EXTERNAL_API}/movies/{self.id}/comments"
 
-        comments = []
-        for comment in http.get(url):
-            comments.append(Comment(comment_from_rest=comment))
-        return comments
+        return [Comment(comment_from_rest=comment) for comment in http.get(url)]
 
     def post_comment(self, message: str) -> dict:
+        """
+        Post a comment to live stream.
+
+        Args:
+            message (str): message which you want to post
+
+        Returns:
+            dict: post result
+        """
         if not self.credentials.is_login:
             raise exceptions.AuthException("You need to login.")
 
@@ -230,8 +240,9 @@ class Video:
 
         Args:
             message (str): message which you want to post
+
         Returns:
-            http.Response: response
+            dict: post result
         """
         if not self.credentials.is_login:
             raise exceptions.AuthException("You need to login.")
@@ -246,8 +257,9 @@ class Video:
         Args:
             vote_id (str): vote id
             index (int): index of vote
+
         Returns:
-           vote result
+           dict: vote result
         """
 
         url = f"https://apiv5.openrec.tv/everyone/api/v5/movies/{self.id}/votes/{vote_id}/votes"

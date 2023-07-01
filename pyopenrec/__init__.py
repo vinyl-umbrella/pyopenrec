@@ -10,11 +10,12 @@ pip install git+https://github.com/vinyl-umbrella/pyopenrec
 ## Usage
 ### Basic
 ```py
-from datetime import datetime
-import pyopenrec
+from pyopenrec import Openrec
 
 
-print("HELLO WORLD")
+openrec = Openrec("EMAIL", "PASSWORD")
+user = openrec.me()
+print(user.id)
 ```
 
 ### More

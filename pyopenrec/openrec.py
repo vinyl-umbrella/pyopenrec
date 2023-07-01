@@ -1,9 +1,9 @@
 import requests
 from typing import Optional
 
-from .etc import OpenrecCredentials
 from .capture import Capture
 from .chat import Chat
+from .credentials import OpenrecCredentials
 from .user import User
 from .util import const, exceptions, http, enums
 from .video import Video
@@ -12,13 +12,27 @@ from .video import Video
 
 
 class Openrec:
+    """
+    Openrec class.
+
+    - `Chat()`: get chat object
+    - `Capture(capture_id, capture_data)`: get capture object
+    - `User(user_id, user_data)`: get user object
+    - `Video(video_id, video_data)`: get video object
+    - `me()`: get logined user info
+    - `have_ng_word(message)`: check if the message has banned word
+    - `timeline(type)`: get login user's timeline videos
+    """
+
     credentials: OpenrecCredentials = None
 
     def __init__(self, email: Optional[str] = None, password: Optional[str] = None):
         """
+        if email and password is provided, login to openrec.tv. Otherwise, you can use other functions without login.
+
         Args:
-            email (str, optional): email address
-            password (str, optional): password
+            email (str): email address
+            password (str): password
         """
         if email and password:
             self.credentials = self.__login(email, password)
@@ -26,9 +40,11 @@ class Openrec:
     def __login(self, email: str, password: str) -> OpenrecCredentials:
         """
         Login to openrec.tv.
+
         Args:
             email (str): email address
             password (str): password
+
         Returns:
             OpenrecCredentials: credentials(uuid, token, random, access_token)
         """
@@ -76,6 +92,16 @@ class Openrec:
 
         return credentials
 
+    @staticmethod
+    def Chat():
+        """
+        Get chat object.
+
+        Returns:
+            Chat: chat object
+        """
+        return Chat()
+
     def Capture(
         self,
         capture_id: str,
@@ -83,22 +109,15 @@ class Openrec:
     ) -> Capture:
         """
         Get capture object.
+
         Args:
             capture_id (str): capture id
-            capture_data (dict, optional): capture data. If you already have capture data, you can skip fetch with this function.
+            capture_data (dict): capture data. If you already have capture data, you can skip fetch with this function.
+
         Returns:
             Capture: capture object
         """
         return Capture(capture_id, capture_data, self.credentials)
-
-    @staticmethod
-    def Chat():
-        """
-        Get chat object.
-        Returns:
-            Chat: chat object
-        """
-        return Chat()
 
     def User(
         self,
@@ -107,9 +126,11 @@ class Openrec:
     ) -> User:
         """
         Get user object.
+
         Args:
             user_id (str): user id
-            user_data (dict, optional): user data. If you already have user data, you can skip fetch with this function.
+            user_data (dict): user data. If you already have user data, you can skip fetch with this function.
+
         Returns:
             User: user object
         """
@@ -122,9 +143,11 @@ class Openrec:
     ) -> Video:
         """
         Get video object.
+
         Args:
             video_id (str): video id
-            video_data (dict, optional): video data. If you already have video data, you can skip fetch with this function.
+            video_data (dict): video data. If you already have video data, you can skip fetch with this function.
+
         Returns:
             Video: video object
         """
@@ -137,15 +160,17 @@ class Openrec:
         Returns:
             User: user object of login user
         """
-        if self.credentials is None:
-            raise exceptions.AuthException()
+        if not self.credentials.is_login:
+            raise exceptions.AuthException("You need to login.")
 
         url = f"{const.AUTHORIZED_API}/users/me"
         res = http.get(url, credentials=self.credentials)
 
         if res.get("status", None) == 0:
             # return res["data"]["items"][0]
-            return self.User(res["data"]["items"][0]["id"], res["data"]["items"][0])
+            return self.User(
+                res["data"]["items"][0]["id"], res["data"]["items"][0], self.credentials
+            )
         else:
             raise exceptions.PyopenrecException(f"Error : {res.get('message')}")
 
@@ -155,11 +180,12 @@ class Openrec:
 
         Args:
             message (str): message
+
         Returns:
             bool: if the message has banned word, return True. otherwise, return False.
         """
-        if self.credentials is None:
-            raise exceptions.AuthException()
+        if not self.credentials.is_login:
+            raise exceptions.AuthException("You need to login.")
 
         url = "https://www.openrec.tv/api/v3/user/check_banned_word"
         params = {"nickname": message}
@@ -177,12 +203,13 @@ class Openrec:
         Get timeline videos.
 
         Args:
-            type (VideoType, optional): video type. Defaults to `coming_up`.
+            type (VideoType): video type. Defaults to `coming_up`.
+
         Returns:
             list[Video]: list of Video
         """
         if not self.credentials.is_login:
-            raise exceptions.AuthException()
+            raise exceptions.AuthException("You need to login.")
 
         if type == enums.VideoType.coming_up:
             # get coming up videos

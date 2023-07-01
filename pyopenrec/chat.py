@@ -6,8 +6,8 @@ import websocket
 from typing import Callable, Optional, Union
 
 from .comment import Comment
-from .video import Video
 from .util.enums import ChatType
+from .video import Video
 
 
 class ChatData:
@@ -49,12 +49,20 @@ class ChatData:
 
 
 class Chat:
+    """
+    Chat class.
+
+    - `connect_chat(vid, debug, reconnect, on_open, on_message, on_error, on_close)`: connect to chat server
+    """
+
     @staticmethod
     def __get_ws_url(vid: str) -> str:
         """
         Get the websocket url for the chat server.
+
         Args:
-            vid: video id
+            vid (str): video id
+
         Returns:
             str: websocket url
         """
@@ -67,8 +75,10 @@ class Chat:
     def __parse_chat(msg: str) -> ChatData:
         """
         Parse chat data from websocket.
+
         Args:
-            msg: received websocket message
+            msg (str): received websocket message
+
         Returns:
             ChatData: parsed data
         """
@@ -110,10 +120,11 @@ class Chat:
     ):
         """
         connect to chat server.
+
         Args:
-            vid: video id
-            debug: enable debug mode
-            reconnect: reconnect when connection is closed except streaming is finished
+            vid (str): video id
+            debug (bool): enable debug mode
+            reconnect (bool): reconnect when connection is closed except streaming is finished
             on_open: callback function when connection is established
             on_message: callback function when message is received
             on_error: callback function when error occurs

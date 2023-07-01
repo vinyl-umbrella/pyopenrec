@@ -1,13 +1,20 @@
 from typing import Optional
 
 from .comment import Comment
-from .etc import OpenrecCredentials
+from .credentials import OpenrecCredentials
 from .user import User
 from .util import const, exceptions, enums, http
 from .video import Video
 
 
 class Capture:
+    """
+    Capture class.
+
+    - `get_comments()`: get comments for capture
+    - `post_comment(message)`: post comment to capture
+    - `post_reaction(reaction_type)`: post reaction to capture
+    """
     credentials: OpenrecCredentials = None
     id: str = None
     title: str = None
@@ -50,8 +57,13 @@ class Capture:
         self.capture_channel = User(
             data["capture_channel"].get("id"),
             user_data=data.get("capture_channel"),
+            credentials=self.credentials,
         )
-        self.video = Video(data["movie"].get("id"), video_data=data.get("movie"))
+        self.video = Video(
+            data["movie"].get("id"),
+            video_data=data.get("movie"),
+            credentials=self.credentials,
+        )
 
         for r in data["reaction_stats_list"]:
             self.reactions[enums.ReactionType(r["id"]).name] = r["count"]
@@ -64,10 +76,7 @@ class Capture:
             list[Comment]: list of Comment
         """
         url = f"{const.EXTERNAL_API}/captures/{self.id}/comments"
-        comments = []
-        for comment in http.get(url):
-            comments.append(Comment(comment_from_rest=comment))
-        return comments
+        return [Comment(comment_from_rest=comment) for comment in http.get(url)]
 
     def post_comment(self, message: str) -> dict:
         """
@@ -80,7 +89,7 @@ class Capture:
             dict: posted comment info
         """
         if not self.credentials:
-            raise exceptions.AuthException()
+            raise exceptions.AuthException("You need to login.")
 
         url = f"{const.AUTHORIZED_API}/captures/{self.id}/comments"
         params = {"message": message, "consented_comment_terms": True}

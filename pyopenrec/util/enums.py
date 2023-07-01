@@ -32,6 +32,7 @@ class VideoType(Enum):
     live = 1
     vod = 2
 
+
 class ReactionType(Enum):
     kawaii = "kawaii"
     kakke = "kakke"

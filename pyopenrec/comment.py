@@ -4,6 +4,9 @@ from .user import User
 
 
 class Comment:
+    """
+    Comment class.
+    """
     id: int = None
     message: str = None
     posted_at: str = None  # e.g. "2021-08-01T12:00:00.000Z"
