@@ -1,11 +1,24 @@
 from typing import Optional
 
-from .etc import OpenrecCredentials
+from .credentials import OpenrecCredentials
 from .util import const, http
 from .util.enums import VideoType
 
 
 class User:
+    """
+    User class.
+
+    - `follows()`: get users list of this user follows
+    - `followers(sort, page)`: get users list of this user followers
+    - `subscription_info(page)`: get subscription info of a specific user
+    - `contents(type, sort, page)`: get coming ups, vods and current stream list of a specific user
+    - `captures(sort_direction, page)`: get captures list of a specific user
+    - `capture_rank(period, page)`: get capture rank of a specific user
+    - `yell_rank(month, page)`: get yell rank of a specific user
+    - `board_items()`: get board items of a specific user
+    """
+
     credentials: OpenrecCredentials = None
 
     id: str = ""
@@ -13,8 +26,8 @@ class User:
     introduciton: str = None
     icon_image_url: str = None
     cover_image_url: str = None
-    follows: int = None
-    followers: int = None
+    follows_num: int = None
+    followers_num: int = None
     is_premium: bool = None
     is_official: bool = None
     is_fresh: bool = None
@@ -55,8 +68,8 @@ class User:
         self.introduciton = data.get("introduction", None)
         self.icon_image_url = data.get("l_icon_image_url", None)
         self.cover_image_url = data.get("l_cover_image_url", None)
-        self.follows = data.get("follows", None)
-        self.followers = data.get("followers", None)
+        self.follows_num = data.get("follows", None)
+        self.followers_num = data.get("followers", None)
         self.is_premium = data.get("is_premium", None)
         self.is_official = data.get("is_official", None)
         self.is_fresh = data.get("is_fresh", None)
@@ -69,38 +82,42 @@ class User:
         self.twitter_id = data.get("twitter_screen_name", None)
         # self.streaming = data.get("onair_broadcast_movies", None)
 
-    def fetch_follows(
+    def follows(
         self, sort: Optional[str] = "followed_at", page: int = 1
     ) -> list["User"]:
         """
         Fetch users list of this user follows.
+
         Args:
             sort (str): "followed_at" or "movie_count" or "movie_published_at"
             page (int): page number
+
         Returns:
-            list: list of users
+            list[User]: list of users
         """
         url = f"{const.EXTERNAL_API}/users/{self.id}/follows"
         param = {"sort": sort, "page": page}
-        folows_list = []
-        for user in http.get(url, param):
-            folows_list.append(User(user["id"], user))
-        return folows_list
 
-    def fetch_followers(self, page: int = 1):
+        return [
+            User(user["id"], user, self.credentials) for user in http.get(url, param)
+        ]
+
+    def followers(self, page: int = 1) -> list["User"]:
         """
         Fetch users list of this user followers.
+
         Args:
             page (int): page number
+
         Returns:
-            list: list of users
+            list[User]: list of users
         """
         url = f"{const.EXTERNAL_API}/users/{self.id}/followers"
         param = {"page": page}
-        followers_list = []
-        for user in http.get(url, param):
-            followers_list.append(User(user["id"], user))
-        return followers_list
+
+        return [
+            User(user["id"], user, self.credentials) for user in http.get(url, param)
+        ]
 
     def subscription_info(self) -> dict:
         """
@@ -119,12 +136,12 @@ class User:
         Get coming ups, vods and current stream list of a specific user.
 
         Args:
-            user_id: user id
-            type: VideoType
-            sort: "total_views" or "created_at" or "-created_at" or "schedule_at" or "total_yells" or "-total_yells" or "popularity" or "published_at" or "-published_at"
-            page: page number
+            type (VideoType): VideoType
+            sort (str): "total_views" or "created_at" or "-created_at" or "schedule_at" or "total_yells" or "-total_yells" or "popularity" or "published_at" or "-published_at"
+            page (int): page number
+
         Returns:
-            list: list of contents # TODO: return Video object
+            list[dict]: list of contents # TODO: return Video object
         """
         url = f"{const.EXTERNAL_API}/movies"
         params = {
@@ -144,11 +161,11 @@ class User:
         Get captures list of a specific user.
 
         Args:
-            user_id: user id
-            sort_direction: "ASC" or "DESC"
-            page: page number
+            sort_direction (str): "ASC" or "DESC"
+            page (int): page number
+
         Returns:
-            list: list of captures # TODO: return Capture object
+            list[dict]: list of captures # TODO: Captureを返したい
         """
         url = f"{const.EXTERNAL_API}/captures"
         params = {
@@ -167,11 +184,12 @@ class User:
         Get capture rank of a specific user.
 
         Args:
-            user_id: user id
-            preriod: "daily" or "weekly" or "monthly"
-            page: page number
+            user_id (str): user id
+            preriod (str): "daily" or "weekly" or "monthly"
+            page (int): page number
+
         Returns:
-            list: list of captures # TODO: return Capture object
+            list[dict]: list of captures # TODO: Captureを返したい
         """
 
         url = f"{const.EXTERNAL_API}/capture-ranks"
@@ -187,9 +205,10 @@ class User:
         Get yell rank of a specific user.
 
         Args:
-            month: yyyyMM. if month is empty, return all yell rank.
+            month (str): yyyyMM. if month is empty, return all yell rank.
+
         Returns:
-            list: list of yell rank
+            list[dict]: list of yell rank
         """
         url = f"{const.EXTERNAL_API}/yell-ranks"
         params = {
@@ -197,10 +216,13 @@ class User:
             "month": month,
             "page": page,
         }
+
         l = []
         for rank in http.get(url, params):
-            rank["user"] = User(rank["user"]["id"], rank["user"])
-            rank["to_user"] = User(rank["to_user"]["id"], rank["to_user"])
+            rank["user"] = User(rank["user"]["id"], rank["user"], self.credentials)
+            rank["to_user"] = User(
+                rank["to_user"]["id"], rank["to_user"], self.credentials
+            )
             l.append(rank)
         return l
 
@@ -209,7 +231,7 @@ class User:
         Get board items of a specific user.
 
         Returns:
-            dict: board info
+            list[dict]: list of board items
         """
         url = f"{const.EXTERNAL_API}/ext-board/users/{self.id}/board-items"
         params = {"board_type": "custom-board", "page": 1}
