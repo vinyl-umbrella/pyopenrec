@@ -1,38 +1,52 @@
 import unittest
 
+from pyopenrec.user import User
 from pyopenrec.video import Video
 
 
 class TestVideo(unittest.TestCase):
-    v = Video()
+    v = Video("1o8q43q3yzk")
 
-    def test_stream_list(self):
-        data = self.v.stream_list("-total_yells", page=1)
-        self.assertEqual(200, data.status)
-        self.assertIsNotNone(data.url)
-        self.assertIsNotNone(data.data)
-        self.assertIsInstance(data.data, list)
+    def test_yell_rank(self):
+        data = self.v.yell_rank()
+        self.assertIsNotNone(data)
+        self.assertIsInstance(data, list)
+        self.assertIsNotNone(data[0]["rank"])
+        self.assertIsInstance(data[0]["user"], dict)
 
-    def test_vod_list(self):
-        data = self.v.vod_list(sort="created_at", page=2)
-        self.assertEqual(200, data.status)
-        self.assertIsNotNone(data.url)
-        self.assertIsNotNone(data.data)
-        self.assertIsInstance(data.data, list)
+    def test_yell_history(self):
+        data = self.v.yell_history()
+        self.assertIsNotNone(data)
+        self.assertIsInstance(data, list)
+        self.assertIsNotNone(data[0]["yell"])
+        self.assertIsInstance(data[0]["user"], dict)
 
-    def test_movie_list(self):
-        data = self.v.movie_list("created_at", page=2)
-        self.assertEqual(200, data.status)
-        self.assertIsNotNone(data.url)
-        self.assertIsNotNone(data.data)
-        self.assertIsInstance(data.data, list)
+    def test_get_comments(self):
+        comments = self.v.get_comments()
+        self.assertIsNotNone(comments)
+        self.assertIsInstance(comments, list)
+        self.assertIsNotNone(comments[0].id)
+        self.assertIsNotNone(comments[0].user)
+        self.assertIsInstance(comments[0].user, User)
+        self.assertIsNotNone(comments[0].user.id)
 
-    def test_video_info(self):
-        data = self.v.video_info("e5rkej2k1rv")
-        self.assertEqual(200, data.status)
-        self.assertIsNotNone(data.url)
-        self.assertIsNotNone(data.data)
-        self.assertIsInstance(data.data, dict)
+    def test_get_recent_comments(self):
+        comments = self.v.get_recent_comments()
+        self.assertIsNotNone(comments)
+        self.assertIsInstance(comments, list)
+        self.assertIsNotNone(comments[0].id)
+        self.assertIsNotNone(comments[0].user)
+        self.assertIsInstance(comments[0].user, User)
+        self.assertIsNotNone(comments[0].user.id)
+
+    def test_get_vod_comments(self):
+        comments = self.v.get_vod_comments()
+        self.assertIsNotNone(comments)
+        self.assertIsInstance(comments, list)
+        self.assertIsNotNone(comments[0].id)
+        self.assertIsNotNone(comments[0].user)
+        self.assertIsInstance(comments[0].user, User)
+        self.assertIsNotNone(comments[0].user.id)
 
 
 if __name__ == "__main__":
