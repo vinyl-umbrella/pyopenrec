@@ -5,6 +5,7 @@ class OpenrecCredentials:
     """
     Credentials for openrec.tv.
     """
+
     access_token: str = None
     uuid: str = None
     token: str = None
