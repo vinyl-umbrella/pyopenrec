@@ -22,6 +22,7 @@ class User:
     credentials: OpenrecCredentials = None
 
     id: str = ""
+    recxuser_id: str = None
     nickname: str = None
     introduciton: str = None
     icon_image_url: str = None
@@ -36,6 +37,7 @@ class User:
     live_views: int = None
     registered_at: str = None
     user_status: str = None  # "publish": have streaming authority, "bang": normal user
+    user_color: str = None
     views: int = None
     twitter_id: str = None
     # streaming: dict = None
@@ -64,6 +66,7 @@ class User:
             data = http.get(url)
 
         self.id = data.get("id", None)
+        self.recxuser_id = data.get("recxuser_id", None)
         self.nickname = data.get("nickname", None)
         self.introduciton = data.get("introduction", None)
         self.icon_image_url = data.get("l_icon_image_url", None)
@@ -78,6 +81,7 @@ class User:
         self.live_views = data.get("live_views", None)
         self.registered_at = data.get("registered_at", None)
         self.user_status = data.get("user_status", None)
+        self.user_color = data.get("user_color", None)
         self.views = data.get("views", None)
         self.twitter_id = data.get("twitter_screen_name", None)
         # self.streaming = data.get("onair_broadcast_movies", None)
