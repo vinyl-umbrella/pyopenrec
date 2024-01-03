@@ -40,6 +40,11 @@ class Comment:
             self.stamp = comment_from_rest.get("stamp", None)
             self.capture = comment_from_rest.get("capture", None)
 
+            # Convert data from ws and for unification
+            comment_from_rest["user"]["user_color"] = comment_from_rest["chat_setting"][
+                "name_color"
+            ]
+
             self.user = User(
                 comment_from_rest["user"]["id"], comment_from_rest.get("user", None)
             )
