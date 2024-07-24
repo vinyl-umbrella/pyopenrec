@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 
 class OpenrecCredentials:
@@ -6,10 +7,10 @@ class OpenrecCredentials:
     Credentials for openrec.tv.
     """
 
-    access_token: str = None
-    uuid: str = None
-    token: str = None
-    random: str = None
+    access_token: Optional[str] = None
+    uuid: Optional[str] = None
+    token: Optional[str] = None
+    random: Optional[str] = None
 
     @property
     def is_login(self) -> bool:

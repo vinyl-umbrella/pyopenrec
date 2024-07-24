@@ -19,27 +19,27 @@ class User:
     - `board_items()`: get board items of a specific user
     """
 
-    credentials: OpenrecCredentials = None
+    credentials: Optional[OpenrecCredentials]
 
     id: str = ""
-    recxuser_id: str = None
-    nickname: str = None
-    introduciton: str = None
-    icon_image_url: str = None
-    cover_image_url: str = None
-    follows_num: int = None
-    followers_num: int = None
-    is_premium: bool = None
-    is_official: bool = None
-    is_fresh: bool = None
-    is_warned: bool = None
-    is_live: bool = None
-    live_views: int = None
-    registered_at: str = None
-    user_status: str = None  # "publish": have streaming authority, "bang": normal user
-    user_color: str = None
-    views: int = None
-    twitter_id: str = None
+    recxuser_id: Optional[str] = None
+    nickname: Optional[str] = None
+    introduciton: Optional[str] = None
+    icon_image_url: Optional[str] = None
+    cover_image_url: Optional[str] = None
+    follows_num: Optional[int] = None
+    followers_num: Optional[int] = None
+    is_premium: Optional[bool] = None
+    is_official: Optional[bool] = None
+    is_fresh: Optional[bool] = None
+    is_warned: Optional[bool] = None
+    is_live: Optional[bool] = None
+    live_views: Optional[int] = None
+    registered_at: Optional[str] = None
+    user_status: Optional[str] = None  # "publish": have streaming authority, "bang": normal user
+    user_color: Optional[str] = None
+    views: Optional[int] = None
+    twitter_id: Optional[str] = None
     # streaming: dict = None
 
     def __init__(
@@ -61,9 +61,13 @@ class User:
             user_data (dict): user info from external api
         """
         data = user_data
-        if user_data is None:
+
+        if not data:
             url = f"{const.EXTERNAL_API}/channels/{self.id}"
             data = http.get(url)
+
+            if not isinstance(data, dict):
+                raise AssertionError("Unexpected response.")
 
         self.id = data.get("id", None)
         self.recxuser_id = data.get("recxuser_id", None)
@@ -86,9 +90,7 @@ class User:
         self.twitter_id = data.get("twitter_screen_name", None)
         # self.streaming = data.get("onair_broadcast_movies", None)
 
-    def follows(
-        self, sort: Optional[str] = "followed_at", page: int = 1
-    ) -> list["User"]:
+    def follows(self, sort: Optional[str] = "followed_at", page: int = 1) -> list["User"]:
         """
         Fetch users list of this user follows.
 
@@ -102,9 +104,7 @@ class User:
         url = f"{const.EXTERNAL_API}/users/{self.id}/follows"
         param = {"sort": sort, "page": page}
 
-        return [
-            User(user["id"], user, self.credentials) for user in http.get(url, param)
-        ]
+        return [User(user["id"], user, self.credentials) for user in http.get(url, param)]
 
     def followers(self, page: int = 1) -> list["User"]:
         """
@@ -119,9 +119,7 @@ class User:
         url = f"{const.EXTERNAL_API}/users/{self.id}/followers"
         param = {"page": page}
 
-        return [
-            User(user["id"], user, self.credentials) for user in http.get(url, param)
-        ]
+        return [User(user["id"], user, self.credentials) for user in http.get(url, param)]
 
     def subscription_info(self) -> dict:
         """
@@ -131,7 +129,11 @@ class User:
             dict: subscription info
         """
         url = f"{const.EXTERNAL_API}/subs-channels/{self.id}"
-        return http.get(url)
+        d = http.get(url)
+
+        if not isinstance(d, dict):
+            raise AssertionError("Unexpected response.")
+        return d
 
     def contents(
         self, type: VideoType, sort: Optional[str] = "schedule_at", page: int = 1
@@ -154,7 +156,10 @@ class User:
             "sort": sort,
             "page": page,
         }
-        return http.get(url, params)
+        d = http.get(url, params)
+        if not isinstance(d, list):
+            raise AssertionError("Unexpected response.")
+        return d
 
     def captures(
         self,
@@ -179,7 +184,10 @@ class User:
             "page": page,
         }
 
-        return http.get(url, params)
+        d = http.get(url, params)
+        if not isinstance(d, list):
+            raise AssertionError("Unexpected response.")
+        return d
 
     def capture_rank(
         self, preriod: Optional[str] = "weekly", page: Optional[int] = 1
@@ -202,7 +210,10 @@ class User:
             "period": preriod,
             "page": page,
         }
-        return http.get(url, params)
+        d = http.get(url, params)
+        if not isinstance(d, list):
+            raise AssertionError("Unexpected response.")
+        return d
 
     def yell_rank(self, month: Optional[str], page: int = 1) -> list[dict]:
         """
@@ -224,9 +235,7 @@ class User:
         l = []
         for rank in http.get(url, params):
             rank["user"] = User(rank["user"]["id"], rank["user"], self.credentials)
-            rank["to_user"] = User(
-                rank["to_user"]["id"], rank["to_user"], self.credentials
-            )
+            rank["to_user"] = User(rank["to_user"]["id"], rank["to_user"], self.credentials)
             l.append(rank)
         return l
 
@@ -240,4 +249,7 @@ class User:
         url = f"{const.EXTERNAL_API}/ext-board/users/{self.id}/board-items"
         params = {"board_type": "custom-board", "page": 1}
 
-        return http.get(url, params)
+        d = http.get(url, params)
+        if not isinstance(d, list):
+            raise AssertionError("Unexpected response.")
+        return d

@@ -31,9 +31,7 @@ class Info:
         return [Capture(c["capture"]["id"], c) for c in http.get(url, params)]
 
     @staticmethod
-    def user_rank(
-        period: str, date: Optional[str] = None, page: Optional[int] = 1
-    ) -> list["User"]:
+    def user_rank(period: str, date: Optional[str] = None, page: Optional[int] = 1) -> list["User"]:
         """
         Get current user rank.
 

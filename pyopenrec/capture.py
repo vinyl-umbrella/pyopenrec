@@ -3,7 +3,7 @@ from typing import Optional
 from .comment import Comment
 from .credentials import OpenrecCredentials
 from .user import User
-from .util import const, exceptions, enums, http
+from .util import const, enums, exceptions, http
 from .video import Video
 
 
@@ -16,17 +16,17 @@ class Capture:
     - `post_reaction(reaction_type)`: post reaction to capture
     """
 
-    credentials: OpenrecCredentials = None
-    id: str = None
-    title: str = None
-    is_ban: bool = None
-    is_hidden: bool = None
-    total_views: int = None
-    url: str = None
-    thumbnail_url: str = None
-    capture_channel: User = None
-    video: Video = None
-    reactions: dict[enums.ReactionType, int] = {}
+    credentials: Optional[OpenrecCredentials] = None
+    id: Optional[str] = None
+    title: Optional[str] = None
+    is_ban: Optional[bool] = None
+    is_hidden: Optional[bool] = None
+    total_views: Optional[int] = None
+    url: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    capture_channel: Optional[User] = None
+    video: Optional[Video] = None
+    reactions: Optional[dict[enums.ReactionType, int]] = {}
 
     def __init__(
         self,
@@ -43,6 +43,9 @@ class Capture:
         if capture_data is None:
             url = f"{const.EXTERNAL_API}/captures/{self.id}"
             data = http.get(url)
+
+        if not isinstance(data, dict):
+            raise AssertionError("Unexpected response.")
 
         self.id = data["capture"].get("id", None)
         self.title = data["capture"].get("title", None)
@@ -94,7 +97,10 @@ class Capture:
 
         url = f"{const.AUTHORIZED_API}/captures/{self.id}/comments"
         params = {"message": message, "consented_comment_terms": True}
-        return http.post(url, params, self.credentials)
+        d = http.post(url, params, self.credentials)
+        if not isinstance(d, dict):
+            raise AssertionError("Unexpected response.")
+        return d
 
     def post_reaction(self, reaction_type: enums.ReactionType) -> dict:
         """
@@ -111,4 +117,7 @@ class Capture:
             "target_type": "capture",
             "reaction_id": reaction_type.name,
         }
-        return http.post(url, data, self.credentials)
+        d = http.post(url, data, self.credentials)
+        if not isinstance(d, dict):
+            raise AssertionError("Unexpected response.")
+        return d

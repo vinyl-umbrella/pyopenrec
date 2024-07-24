@@ -9,24 +9,24 @@ from .util.enums import VideoType
 
 
 class Video:
-    credentials: OpenrecCredentials = None
-    id: str = None
-    movie_id: int = None
-    title: str = None
-    introduction: str = None
-    is_hidden: bool = None
-    is_live: bool = None
-    on_air_status: VideoType = None
-    thumnail_url: str = None
-    live_views: int = None
-    total_views: int = None
-    total_yells: int = None
-    created_at: str = None
-    published_at: str = None
-    started_at: str = None
-    tags: list[str] = None
-    media_url: str = None
-    user: "User" = None
+    credentials: Optional[OpenrecCredentials] = None
+    id: Optional[str] = None
+    movie_id: Optional[int] = None
+    title: Optional[str] = None
+    introduction: Optional[str] = None
+    is_hidden: Optional[bool] = None
+    is_live: Optional[bool] = None
+    on_air_status: Optional[VideoType] = None
+    thumnail_url: Optional[str] = None
+    live_views: Optional[int] = None
+    total_views: Optional[int] = None
+    total_yells: Optional[int] = None
+    created_at: Optional[str] = None
+    published_at: Optional[str] = None
+    started_at: Optional[str] = None
+    tags: Optional[list[str]] = None
+    media_url: Optional[str] = None
+    user: Optional["User"] = None
 
     def __init__(
         self,
@@ -57,6 +57,9 @@ class Video:
             url = f"{const.EXTERNAL_API}/movies/{self.id}"
             data = http.get(url)
 
+        if not isinstance(data, dict):
+            raise AssertionError("Unexpected response.")
+
         self.id = data.get("id", None)
         self.movie_id = data.get("movie_id", None)
         self.title = data.get("title", None)
@@ -72,21 +75,14 @@ class Video:
         self.published_at = data.get("published_at", None)
         self.started_at = data.get("started_at", None)
         self.tags = data.get("tags", None)
-        self.user = User(
-            data["channel"]["id"], data.get("channel", None), self.credentials
-        )
+        self.user = User(data["channel"]["id"], data.get("channel", None), self.credentials)
 
         # live
         if self.on_air_status == VideoType.live:
             self.media_url = data["media"]["url_ull"]
         # vod
-        elif (
-            self.on_air_status == VideoType.vod
-            and data["media"]["url_public"] is not None
-        ):
-            self.media_url = data["media"]["url_public"].replace(
-                "public.m3u8", "playlist.m3u8"
-            )
+        elif self.on_air_status == VideoType.vod and data["media"]["url_public"] is not None:
+            self.media_url = data["media"]["url_public"].replace("public.m3u8", "playlist.m3u8")
         # uploaded video
         elif self.on_air_status is None and data["movie_type"] == "2":
             self.media_url = data["media"]["url"]
@@ -104,7 +100,10 @@ class Video:
         url = f"{const.EXTERNAL_API}/yell-ranks"
         params = {"movie_id": self.id, "page": page}
         # TODO: yell classを作ってまとめたい
-        return http.get(url, params)
+        d = http.get(url, params)
+        if not isinstance(d, list):
+            raise AssertionError("Unexpected response.")
+        return d
 
     def yell_history(self, page: int = 1) -> list[dict]:
         """
@@ -119,7 +118,10 @@ class Video:
         url = f"{const.EXTERNAL_API}/yell-logs"
         params = {"movie_id": self.id, "page": page}
         # TODO: yell classを作ってまとめたい
-        return http.get(url, params)
+        d = http.get(url, params)
+        if not isinstance(d, list):
+            raise AssertionError("Unexpected response.")
+        return d
 
     def get_comments(
         self,
@@ -188,7 +190,7 @@ class Video:
         Returns:
             dict: post result
         """
-        if not self.credentials.is_login:
+        if self.credentials and not self.credentials.is_login:
             raise exceptions.AuthException("You need to login.")
 
         url = f"{const.AUTHORIZED_API}/movies/{self.id}/chats"
@@ -199,7 +201,10 @@ class Video:
             "to_user_id": "",
             "consented_chat_terms": "false",
         }
-        return http.post(url, params, self.credentials)
+        d = http.post(url, params, self.credentials)
+        if not isinstance(d, dict):
+            raise AssertionError("Unexpected response.")
+        return d
 
     # def post_template_comment(self, comment_id: int) -> dict:
     #     """
@@ -244,11 +249,14 @@ class Video:
         Returns:
             dict: post result
         """
-        if not self.credentials.is_login:
+        if self.credentials and not self.credentials.is_login:
             raise exceptions.AuthException("You need to login.")
         url = f"{const.AUTHORIZED_API}/movies/{self.id}/comments"
         params = {"message": message}
-        return http.post(url, params, self.credentials)
+        d = http.post(url, params, self.credentials)
+        if not isinstance(d, dict):
+            raise AssertionError("Unexpected response.")
+        return d
 
     def post_vote(self, vote_id: str, index: int) -> dict:
         """
@@ -264,4 +272,7 @@ class Video:
 
         url = f"https://apiv5.openrec.tv/everyone/api/v5/movies/{self.id}/votes/{vote_id}/votes"
         params = {"vote_index": index}
-        return http.post(url, params, self.credentials)
+        d = http.post(url, params, self.credentials)
+        if not isinstance(d, dict):
+            raise AssertionError("Unexpected response.")
+        return d
