@@ -8,13 +8,13 @@ class Comment:
     Comment class.
     """
 
-    id: int = None
-    message: str = None
-    posted_at: str = None  # e.g. "2021-08-01T12:00:00.000Z"
-    is_muted: bool = None
-    user: User = None
-    stamp: dict = None
-    capture: dict = None
+    id: Optional[int] = None
+    message: Optional[str] = None
+    posted_at: Optional[str] = None  # e.g. "2021-08-01T12:00:00.000Z"
+    is_muted: Optional[bool] = None
+    user: Optional[User] = None
+    stamp: Optional[dict] = None
+    capture: Optional[dict] = None
 
     def __init__(
         self,
@@ -32,9 +32,9 @@ class Comment:
         if comment_from_rest:
             self.id = comment_from_rest.get("id", None)
             self.message = comment_from_rest.get("message", None)
-            self.posted_at = comment_from_rest.get(
-                "posted_at", None
-            ) or comment_from_rest.get("created_at", None)
+            self.posted_at = comment_from_rest.get("posted_at", None) or comment_from_rest.get(
+                "created_at", None
+            )
             self.is_muted = comment_from_rest.get("is_muted", None)
 
             self.stamp = comment_from_rest.get("stamp", None)
@@ -45,9 +45,7 @@ class Comment:
                 "name_color"
             ]
 
-            self.user = User(
-                comment_from_rest["user"]["id"], comment_from_rest.get("user", None)
-            )
+            self.user = User(comment_from_rest["user"]["id"], comment_from_rest.get("user", None))
 
         # set comment info from websocket
         elif comment_from_ws:

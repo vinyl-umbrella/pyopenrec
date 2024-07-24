@@ -1,9 +1,9 @@
-import requests
 from typing import Optional, Union
 
-from . import const
-from . import exceptions
+import requests
+
 from ..credentials import OpenrecCredentials
+from . import const, exceptions
 
 
 def get(
@@ -27,16 +27,12 @@ def get(
     try:
         j = res.json()
     except:
-        raise exceptions.PyopenrecException(
-            f"Invalid json response from {url}: {res.status_code}"
-        )
+        raise exceptions.PyopenrecException(f"Invalid json response from {url}: {res.status_code}")
 
     if res.ok:
         return j
     else:
-        raise exceptions.PyopenrecException(
-            f"Error {res.status_code}: {j.get('message')}"
-        )
+        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j.get('message')}")
 
 
 def post(
@@ -60,17 +56,13 @@ def post(
     try:
         j = res.json()
     except:
-        raise exceptions.PyopenrecException(
-            f"Invalid json response from {url}: {res.status_code}"
-        )
+        raise exceptions.PyopenrecException(f"Invalid json response from {url}: {res.status_code}")
 
     if res.ok and j.get("status") == 0:
         return j
     else:
         print(j)
-        raise exceptions.PyopenrecException(
-            f"Error {res.status_code}: {j.get('message')}"
-        )
+        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j.get('message')}")
 
 
 def put(
@@ -94,16 +86,12 @@ def put(
     try:
         j = res.json()
     except:
-        raise exceptions.PyopenrecException(
-            f"Invalid json response from {url}: {res.status_code}"
-        )
+        raise exceptions.PyopenrecException(f"Invalid json response from {url}: {res.status_code}")
 
     if res.ok:
         return j
     else:
-        raise exceptions.PyopenrecException(
-            f"Error {res.status_code}: {j.get('message')}"
-        )
+        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j.get('message')}")
 
 
 def delete(
@@ -125,13 +113,9 @@ def delete(
     try:
         j = res.json()
     except:
-        raise exceptions.PyopenrecException(
-            f"Invalid json response from {url}: {res.status_code}"
-        )
+        raise exceptions.PyopenrecException(f"Invalid json response from {url}: {res.status_code}")
 
     if res.ok:
         return j
     else:
-        raise exceptions.PyopenrecException(
-            f"Error {res.status_code}: {j.get('message')}"
-        )
+        raise exceptions.PyopenrecException(f"Error {res.status_code}: {j.get('message')}")

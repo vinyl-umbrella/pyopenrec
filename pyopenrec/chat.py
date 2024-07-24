@@ -1,9 +1,9 @@
 import json
-import time
 import threading
-import websocket
-
+import time
 from typing import Callable, Optional, Union
+
+import websocket
 
 from .comment import Comment
 from .util.enums import ChatType
@@ -15,8 +15,8 @@ class ChatData:
     Chat data from websocket.
     """
 
-    type: int = None
-    data: Union[Comment, dict] = None
+    type: Optional[int] = None
+    data: Optional[Union[Comment, dict]] = None
 
     def __init__(self, type: int, data: dict):
         self.type = type
@@ -113,10 +113,10 @@ class Chat:
         vid: str,
         debug: Optional[bool] = False,
         reconnect: Optional[bool] = False,
-        on_open: Callable[[], None] = None,
-        on_message: Callable[[ChatData], None] = None,
-        on_error: Callable[[Exception], None] = None,
-        on_close: Callable[[int, str], None] = None,
+        on_open: Optional[Callable[[], None]] = None,
+        on_message: Optional[Callable[[ChatData], None]] = None,
+        on_error: Optional[Callable[[Exception], None]] = None,
+        on_close: Optional[Callable[[int, str], None]] = None,
     ):
         """
         connect to chat server.

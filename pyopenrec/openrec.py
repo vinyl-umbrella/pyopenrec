@@ -1,12 +1,13 @@
-import requests
 from typing import Optional
+
+import requests
 
 from .capture import Capture
 from .chat import Chat
 from .credentials import OpenrecCredentials
 from .info import Info
 from .user import User
-from .util import const, exceptions, http, enums
+from .util import const, enums, exceptions, http
 from .video import Video
 
 
@@ -23,7 +24,7 @@ class Openrec:
     - `timeline(type)`: get login user's timeline videos
     """
 
-    credentials: OpenrecCredentials = None
+    credentials: Optional[OpenrecCredentials] = None
 
     def __init__(
         self,
@@ -65,9 +66,7 @@ class Openrec:
                 headers=const.HEADERS,
             )
             if not r.ok:
-                raise exceptions.PyopenrecException(
-                    "Failed to get initial param.", r.text
-                )
+                raise exceptions.PyopenrecException("Failed to get initial param.", r.text)
 
             credentials.uuid = r.cookies.get("uuid", None)
             credentials.token = r.cookies.get("token", None)
@@ -169,18 +168,21 @@ class Openrec:
         """
         return Video(video_id, video_data, self.credentials)
 
-    def me(self) -> User:
+    def me(self) -> "User":
         """
         Get logined user info.
 
         Returns:
             User: user object of login user
         """
-        if not self.credentials.is_login:
+        if self.credentials and not self.credentials.is_login:
             raise exceptions.AuthException("You need to login.")
 
         url = f"{const.AUTHORIZED_API}/users/me"
         res = http.get(url, credentials=self.credentials)
+
+        if not isinstance(res, dict):
+            raise AssertionError("Unexpected response.")
 
         if res.get("status", None) == 0:
             # return res["data"]["items"][0]
@@ -198,21 +200,22 @@ class Openrec:
         Returns:
             bool: if the message has banned word, return True. otherwise, return False.
         """
-        if not self.credentials.is_login:
+        if self.credentials and not self.credentials.is_login:
             raise exceptions.AuthException("You need to login.")
 
         url = "https://www.openrec.tv/api/v3/user/check_banned_word"
         params = {"nickname": message}
         res = http.get(url, params, self.credentials)
 
+        if not isinstance(res, dict):
+            raise AssertionError("Unexpected response.")
+
         if res.get("status", None) == 0:
             return bool(res["data"]["has_banned_word"])
         else:
             raise exceptions.PyopenrecException(f"Error : {res.get('message')}")
 
-    def timeline(
-        self, type: enums.VideoType = enums.VideoType.coming_up
-    ) -> list[Video]:
+    def timeline(self, type: enums.VideoType = enums.VideoType.coming_up) -> list["Video"]:
         """
         Get timeline videos.
 
@@ -222,7 +225,7 @@ class Openrec:
         Returns:
             list[Video]: list of Video
         """
-        if not self.credentials.is_login:
+        if self.credentials and not self.credentials.is_login:
             raise exceptions.AuthException("You need to login.")
 
         if type == enums.VideoType.coming_up:
@@ -231,6 +234,9 @@ class Openrec:
             params = {"limit": 40}
 
             res = http.get(url, params, self.credentials)
+
+            if not isinstance(res, dict):
+                raise AssertionError("Unexpected response.")
 
             if res.get("status", None) == 0:
                 return [self.Video(v["id"], v) for v in res["data"]["items"]]
@@ -243,10 +249,11 @@ class Openrec:
             params = {"onair_status": type.value, "limit": 40}
             res = http.get(url, params, self.credentials)
 
+            if not isinstance(res, dict):
+                raise AssertionError("Unexpected response.")
+
             if res.get("status", None) == 0:
-                return [
-                    self.Video(v["id"], v) for v in res["data"]["items"][0]["movies"]
-                ]
+                return [self.Video(v["id"], v) for v in res["data"]["items"][0]["movies"]]
             else:
                 raise exceptions.PyopenrecException(f"Error : {res.get('message')}")
 
