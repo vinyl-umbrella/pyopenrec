@@ -22,7 +22,7 @@ def on_m(msg: ChatData):
             )
         else:
             print(f"{msg.data.user.nickname}({msg.data.user.id})\t{msg.data.message}")
-
+            print(dir(msg.data.user))
     else:
         print(msg.type, msg.type_name)
         print(msg.data)
