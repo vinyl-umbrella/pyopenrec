@@ -27,7 +27,7 @@ There are more programs [here](https://github.com/vinyl-umbrella/pyopenrec/tree/
 __title__ = "pyopenrec"
 __author__ = "vinyl-umbrella"
 __license__ = "MIT"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 from .openrec import Openrec
