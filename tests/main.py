@@ -7,9 +7,9 @@ import test_video
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(test_capture.TestCapture))
-    suite.addTest(unittest.makeSuite(test_video.TestVideo))
-    suite.addTest(unittest.makeSuite(test_user.TestUser))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_capture.TestCapture))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_video.TestVideo))
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_user.TestUser))
     return suite
 
 
