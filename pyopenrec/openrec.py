@@ -34,10 +34,12 @@ class Openrec:
     ):
         """
         if email and password is provided, login to openrec.tv. Otherwise, you can use other functions without login.
+        You can also use credentials generated elsewhere.
 
         Args:
             email (str): email address
             password (str): password
+            credentials (OpenrecCredentials): credentials(uuid, token, random, access_token)
         """
         if credentials:
             self.credentials = credentials
@@ -62,7 +64,7 @@ class Openrec:
 
         with requests.session() as s:
             r = s.post(
-                "https://www.openrec.tv/api-tv/user",
+                "https://www.openrec.tv/api-tv/session",
                 headers=const.HEADERS,
             )
             if not r.ok:
@@ -72,25 +74,17 @@ class Openrec:
             credentials.token = r.cookies.get("token", None)
             credentials.random = r.cookies.get("random", None)
 
-            param = {"mail": email, "password": password}
-            cookie = {
-                "AWSELB": "",
-                "AWSELBCORS": "",
-                "uuid": credentials.uuid,
-                "token": credentials.token,
-                "random": credentials.random,
-            }
+            param = {"email": email, "password": password}
 
             r = s.post(
-                "https://www.openrec.tv/viewapp/v4/mobile/user/login",
+                "https://www.openrec.tv/apiv5/email/login",
                 data=param,
                 headers=const.HEADERS,
-                cookies=cookie,
             )
-            if not r.ok:
-                raise exceptions.PyopenrecException("Failed to login.", r.text)
+            j = r.json()
+            if not r.ok or j.get("status") == -1:
+                raise exceptions.PyopenrecException("Failed to login.", j.get("error_message"))
 
-            # credentials.sessid = r.cookies.get("PHPSESSID")
             credentials.access_token = r.cookies.get("access_token")
             credentials.uuid = r.cookies.get("uuid")
             credentials.token = r.cookies.get("token")
@@ -99,7 +93,7 @@ class Openrec:
         return credentials
 
     @staticmethod
-    def Chat():
+    def Chat() -> Chat:
         """
         Get chat object.
 

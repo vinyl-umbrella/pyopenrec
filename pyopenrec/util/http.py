@@ -61,7 +61,6 @@ def post(
     if res.ok and j.get("status") == 0:
         return j
     else:
-        print(j)
         raise exceptions.PyopenrecException(f"Error {res.status_code}: {j.get('message')}")
 
 

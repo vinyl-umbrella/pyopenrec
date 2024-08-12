@@ -15,10 +15,10 @@ class ChatData:
     Chat data from websocket.
     """
 
-    type: Optional[int] = None
-    data: Optional[Union[Comment, dict]] = None
+    type: int
+    data: Union[Comment, dict]
 
-    def __init__(self, type: int, data: dict):
+    def __init__(self, type: int, data: Union[Comment, dict]):
         self.type = type
         self.data = data
 
@@ -111,7 +111,7 @@ class Chat:
     @staticmethod
     def connect_chat(
         vid: str,
-        debug: Optional[bool] = False,
+        debug: bool = False,
         reconnect: Optional[bool] = False,
         on_open: Optional[Callable[[], None]] = None,
         on_message: Optional[Callable[[ChatData], None]] = None,
@@ -123,7 +123,7 @@ class Chat:
 
         Args:
             vid (str): video id
-            debug (bool): enable debug mode
+            debug (bool): enable debug mode. default is False
             reconnect (bool): reconnect when connection is closed except streaming is finished
             on_open: callback function when connection is established
             on_message: callback function when message is received

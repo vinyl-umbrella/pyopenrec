@@ -36,7 +36,7 @@ class User:
 
     credentials: Optional[OpenrecCredentials]
 
-    id: str = ""
+    id: str
     recxuser_id: Optional[str] = None
     nickname: Optional[str] = None
     introduciton: Optional[str] = None
@@ -66,6 +66,9 @@ class User:
         self.id = id
         self.credentials = credentials
         self.__set_user_info(user_data)
+
+    def __repr__(self):
+        return f"nickname: {self.nickname}, id: {self.id}"
 
     def __set_user_info(self, user_data: Optional[dict] = None):
         """

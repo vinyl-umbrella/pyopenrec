@@ -14,15 +14,10 @@ class OpenrecCredentials:
 
     @property
     def is_login(self) -> bool:
-        return (
-            self.access_token is not None
-            and self.uuid is not None
-            and self.token is not None
-            and self.random is not None
-        )
+        return all([self.access_token, self.uuid, self.token, self.random])
 
     @property
-    def params(self) -> dict:
+    def params(self) -> dict[str, Optional[str]]:
         """
         Return credentials as dict.
         """
@@ -33,10 +28,7 @@ class OpenrecCredentials:
             "random": self.random,
         }
 
-    def __str__(self) -> str:
-        """
-        Return credentials as json string.
-        """
+    def __repr__(self) -> str:
         return json.dumps(self.params)
 
     def load(self, json_str: str) -> None:

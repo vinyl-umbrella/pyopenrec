@@ -8,13 +8,13 @@ class Comment:
     Comment class.
     """
 
-    id: Optional[int] = None
-    message: Optional[str] = None
-    posted_at: Optional[str] = None  # e.g. "2021-08-01T12:00:00.000Z"
-    is_muted: Optional[bool] = None
-    user: Optional[User] = None
-    stamp: Optional[dict] = None
-    capture: Optional[dict] = None
+    id: int
+    message: str
+    posted_at: str  # e.g. "2021-08-01T12:00:00.000Z"
+    is_muted: bool
+    user: User
+    stamp: dict
+    capture: dict
 
     def __init__(
         self,
@@ -65,3 +65,6 @@ class Comment:
                 "is_warned": comment_from_ws.get("is_warned", None),
             }
             self.user = User(comment_from_ws.get("user_key", None), user_data)
+
+    def __repr__(self) -> str:
+        return f"{self.posted_at} {self.user.nickname}({self.user.id})\t{self.message}"

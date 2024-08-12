@@ -15,14 +15,8 @@ def on_m(msg: ChatData):
     ]:
         pass
     elif msg.type_name == ChatType.chat.name:
-        if msg.data.stamp:
-            # if stamp
-            print(
-                f"{msg.data.user.nickname}({msg.data.user.id})\t{msg.data.stamp['image_url']}"
-            )
-        else:
-            print(f"{msg.data.user.nickname}({msg.data.user.id})\t{msg.data.message}")
-            print(dir(msg.data.user))
+        print(msg.data)
+
     else:
         print(msg.type, msg.type_name)
         print(msg.data)

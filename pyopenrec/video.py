@@ -10,7 +10,7 @@ from .util.enums import VideoType
 
 class Video:
     credentials: Optional[OpenrecCredentials] = None
-    id: Optional[str] = None
+    id: str
     movie_id: Optional[int] = None
     title: Optional[str] = None
     introduction: Optional[str] = None
@@ -43,6 +43,9 @@ class Video:
         self.id = id
         self.credentials = credentials
         self.__set_video_info(video_data)
+
+    def __repr__(self):
+        return f"title: {self.title} ,id: {self.id}, user: {self.user}"
 
     def __set_video_info(self, video_data: Optional[dict] = None):
         """
