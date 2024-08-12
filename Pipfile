@@ -11,10 +11,6 @@ pyopenrec = {editable = true, path = "."}
 [dev-packages]
 black = "*"
 
-[requires]
-python_version = "3.10"
-
 [scripts]
 test = "python3 tests/main.py"
 lint = "black pyopenrec"
-
