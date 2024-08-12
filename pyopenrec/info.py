@@ -1,21 +1,23 @@
-from typing import Optional
+from typing import Literal, Optional
 
 from .capture import Capture
 from .user import User
 from .util import const, http
 from .video import Video
 
+RankPeriod = Literal["daily", "weekly", "monthly"]
+
 
 class Info:
     @staticmethod
     def capture_rank(
-        period: str = "daily", is_channel_unique: bool = True, page: Optional[int] = 1
+        period: RankPeriod = "daily", is_channel_unique: bool = True, page: Optional[int] = 1
     ) -> list["Capture"]:
         """
         Get capture rank.
 
         Args:
-            period (str): "daily", "weekly", "monthly"
+            period (RankPeriod): "daily", "weekly", "monthly"
             is_channel_unique (bool): Allow duplicate channels or not
             page (int): page number
 
@@ -31,12 +33,14 @@ class Info:
         return [Capture(c["capture"]["id"], c) for c in http.get(url, params)]
 
     @staticmethod
-    def user_rank(period: str, date: Optional[str] = None, page: Optional[int] = 1) -> list["User"]:
+    def user_rank(
+        period: RankPeriod, date: Optional[str] = None, page: Optional[int] = 1
+    ) -> list["User"]:
         """
         Get current user rank.
 
         Args:
-            period (str): "daily", "weekly", "monthly"
+            period (RankPeriod): "daily", "weekly", "monthly"
             date (str): yyyyMM (e.g. 202101)
             page (int): page number
 

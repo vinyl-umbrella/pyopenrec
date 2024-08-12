@@ -1,8 +1,23 @@
-from typing import Optional
+from typing import Literal, Optional
 
 from .credentials import OpenrecCredentials
 from .util import const, http
 from .util.enums import VideoType
+
+FollowsSortOrder = Literal["followed_at", "movie_count", "movie_published_at"]
+ContentsSortOrder = Literal[
+    "total_views",
+    "created_at",
+    "-created_at",
+    "schedule_at",
+    "total_yells",
+    "-total_yells",
+    "popularity",
+    "published_at",
+    "-published_at",
+]
+GeneralSortOrder = Literal["ASC", "DESC"]
+CaptureRankPeriod = Literal["daily", "weekly", "monthly"]
 
 
 class User:
@@ -90,12 +105,14 @@ class User:
         self.twitter_id = data.get("twitter_screen_name", None)
         # self.streaming = data.get("onair_broadcast_movies", None)
 
-    def follows(self, sort: Optional[str] = "followed_at", page: int = 1) -> list["User"]:
+    def follows(
+        self, sort: Optional[FollowsSortOrder] = "followed_at", page: int = 1
+    ) -> list["User"]:
         """
         Fetch users list of this user follows.
 
         Args:
-            sort (str): "followed_at" or "movie_count" or "movie_published_at"
+            sort (FollowsSortOrder): "followed_at" or "movie_count" or "movie_published_at"
             page (int): page number
 
         Returns:
@@ -136,14 +153,14 @@ class User:
         return d
 
     def contents(
-        self, type: VideoType, sort: Optional[str] = "schedule_at", page: int = 1
+        self, type: VideoType, sort: Optional[ContentsSortOrder] = "schedule_at", page: int = 1
     ) -> list[dict]:
         """
         Get coming ups, vods and current stream list of a specific user.
 
         Args:
             type (VideoType): VideoType
-            sort (str): "total_views" or "created_at" or "-created_at" or "schedule_at" or "total_yells" or "-total_yells" or "popularity" or "published_at" or "-published_at"
+            sort (ContentsSortOrder): "total_views" or "created_at" or "-created_at" or "schedule_at" or "total_yells" or "-total_yells" or "popularity" or "published_at" or "-published_at"
             page (int): page number
 
         Returns:
@@ -163,14 +180,14 @@ class User:
 
     def captures(
         self,
-        sort_direction: Optional[str] = "DESC",
+        sort_direction: Optional[GeneralSortOrder] = "DESC",
         page: int = 1,
     ) -> list[dict]:
         """
         Get captures list of a specific user.
 
         Args:
-            sort_direction (str): "ASC" or "DESC"
+            sort_direction (GeneralSortOrder): "ASC" or "DESC"
             page (int): page number
 
         Returns:
@@ -190,14 +207,13 @@ class User:
         return d
 
     def capture_rank(
-        self, preriod: Optional[str] = "weekly", page: Optional[int] = 1
+        self, preriod: Optional[CaptureRankPeriod] = "weekly", page: Optional[int] = 1
     ) -> list[dict]:
         """
         Get capture rank of a specific user.
 
         Args:
-            user_id (str): user id
-            preriod (str): "daily" or "weekly" or "monthly"
+            preriod (CaptureRankPeriod): "daily" or "weekly" or "monthly"
             page (int): page number
 
         Returns:
@@ -225,6 +241,9 @@ class User:
         Returns:
             list[dict]: list of yell rank
         """
+        if month and (int(month) < 200001 or int(month) > 210001):
+            raise ValueError("Invalid month format. It should be yyyyMM.")
+
         url = f"{const.EXTERNAL_API}/yell-ranks"
         params = {
             "user_id": self.id,
