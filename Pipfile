@@ -13,4 +13,4 @@ black = "*"
 
 [scripts]
 test = "python3 tests/main.py"
-lint = "black pyopenrec"
+lint = "black pyopenrec --line-length 100"
