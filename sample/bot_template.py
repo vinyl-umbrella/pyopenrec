@@ -1,11 +1,11 @@
 from os import path
 
-from pyopenrec import ChatType, Openrec
+from pyopenrec import ChatType, Openrec, credentials
 from pyopenrec.chat import ChatData
-from pyopenrec import credentials
+from pyopenrec.comment import Comment
 
 VID = input("Video ID: ")
-CLIENT = None
+CLIENT: Openrec
 COMMAND_PREFIX = "@bot"
 
 
@@ -14,7 +14,11 @@ def on_o():
 
 
 def on_m(msg: ChatData):
-    if msg.type_name == ChatType.chat.name and msg.data.user.id != CLIENT.me().id:
+    if (
+        msg.type_name == ChatType.chat.name
+        and isinstance(msg.data, Comment)
+        and msg.data.user.id != CLIENT.me().id
+    ):
         # mute検知
         if msg.data.is_muted:
             return
@@ -47,7 +51,7 @@ def on_m(msg: ChatData):
         return
 
     # staff追加
-    if msg.type_name == ChatType.staff_add:
+    if msg.type_name == ChatType.add_staff:
         return
 
     # staff削除

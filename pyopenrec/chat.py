@@ -151,7 +151,7 @@ class Chat:
                     global EXIT_FLAG
                     EXIT_FLAG = True
                     ws.close()
-                elif msg.type_name == ChatType.chat.name:
+                elif msg.type_name == ChatType.chat.name and isinstance(msg.data, dict):
                     # if data is chat, parse data to Comment object
                     msg.data = Comment(comment_from_ws=msg.data)
                 on_message(msg)
